@@ -15,13 +15,14 @@ Everything lives in a single `index.html` with no build step and no dependencies
 - Only `http://` and `https://` links are accepted. A link typed without a protocol gets `https://` added.
 - If the browser blocks the new tabs, the page shows the list with an **Open all links** button and explains how to allow pop-ups so it opens everything automatically next time.
 
-## Deploy to GitHub Pages
+## Deploy to Cloudflare Pages
 
-1. Merge the pull request into `main`.
-2. On GitHub, open the repo, then **Settings → Pages**.
-3. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
-4. Set **Branch** to `main` and the folder to `/ (root)`, then click **Save**.
-5. Wait a minute or two, then refresh the Pages settings. The site is live at `https://adverbly.github.io/multilink/`.
+The site is one static file with no build step, so it can be served from any static host.
+
+1. In the Cloudflare dashboard, open **Workers & Pages**, click **Create**, choose **Pages**, then connect GitHub and pick this repo.
+2. Set the production branch to `main`, the framework preset to **None**, leave the build command empty, and set the build output directory to `/`.
+3. Click **Save and Deploy**. The site is live at `https://<project-name>.pages.dev/`, and every push to `main` redeploys it.
+4. To use your own domain, open the project's **Custom domains** tab and add it. A subdomain on any DNS provider works with a CNAME to the `pages.dev` address. A root domain (like `example.com`) needs its DNS on Cloudflare.
 
 ## Run locally
 
