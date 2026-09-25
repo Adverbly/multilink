@@ -1,0 +1,2221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"
+    />
+    <meta
+      name="description"
+      content="Make one link that opens several links at once."
+    />
+    <title>Multilinks</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231d4ed8'/%3E%3Cpath d='M9 11h9v9H9zM14 7h9v9' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --bg: #f4f6fa;
+        --surface: #ffffff;
+        --surface-2: #eef2f7;
+        --text: #0b1220;
+        --muted: #3d4a5c;
+        --border: #b8c2d0;
+        --border-strong: #6b7a90;
+        --primary: #1d4ed8;
+        --primary-hover: #1e3fae;
+        --on-primary: #ffffff;
+        --accent-soft: #dbe6ff;
+        --success: #0f7a3a;
+        --success-soft: #dcf5e6;
+        --danger: #b3261e;
+        --danger-soft: #fde4e1;
+        --warn: #8a4b00;
+        --warn-soft: #fff1d6;
+        --focus: #f59e0b;
+        --shadow:
+          0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.06);
+        --radius: 16px;
+        --radius-sm: 12px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0a0f1a;
+          --surface: #131b2a;
+          --surface-2: #1b2536;
+          --text: #f3f6fb;
+          --muted: #c3cddb;
+          --border: #3a4760;
+          --border-strong: #8190a8;
+          --primary: #7aa7ff;
+          --primary-hover: #a3c1ff;
+          --on-primary: #06101f;
+          --accent-soft: #1d2d4f;
+          --success: #5fd68f;
+          --success-soft: #11321f;
+          --danger: #ff8a80;
+          --danger-soft: #3a1714;
+          --warn: #ffc466;
+          --warn-soft: #36270d;
+          --shadow:
+            0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+        font-size: clamp(18px, 1rem + 0.35vw, 21px);
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          'Helvetica Neue',
+          Arial,
+          sans-serif;
+        font-size: 1rem;
+        line-height: 1.55;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      a {
+        color: var(--primary);
+        text-underline-offset: 0.18em;
+      }
+      a:hover {
+        color: var(--primary-hover);
+      }
+      :focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+      }
+
+      .wrap {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 32px 16px 64px;
+      }
+      header.site {
+        margin-bottom: 28px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+      }
+      .brand svg {
+        flex: none;
+      }
+      h1 {
+        font-size: clamp(1.9rem, 1.4rem + 2vw, 2.6rem);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin: 18px 0 10px;
+      }
+      h2 {
+        font-size: 1.35rem;
+        line-height: 1.25;
+        margin: 0 0 14px;
+        letter-spacing: -0.01em;
+      }
+      .lead {
+        font-size: 1.12rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      p {
+        margin: 0 0 14px;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+      }
+      @media (max-width: 520px) {
+        .card {
+          padding: 18px 16px;
+        }
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 56px;
+        padding: 12px 24px;
+        font: inherit;
+        font-weight: 700;
+        font-size: 1.05rem;
+        line-height: 1.2;
+        border-radius: var(--radius-sm);
+        border: 2px solid transparent;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        transition:
+          background-color 0.15s,
+          border-color 0.15s,
+          color 0.15s,
+          transform 0.05s;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn svg {
+        flex: none;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: var(--on-primary);
+      }
+      .btn-primary:hover {
+        background: var(--primary-hover);
+        color: var(--on-primary);
+      }
+      .btn-secondary {
+        background: var(--surface);
+        color: var(--text);
+        border-color: var(--border-strong);
+      }
+      .btn-secondary:hover {
+        background: var(--surface-2);
+        color: var(--text);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--primary);
+        border-color: transparent;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .btn-ghost:hover {
+        background: var(--accent-soft);
+        color: var(--primary);
+      }
+      .btn-huge {
+        min-height: 68px;
+        font-size: 1.25rem;
+        width: 100%;
+      }
+      .btn-mega {
+        min-height: 88px;
+        font-size: 1.55rem;
+        width: 100%;
+        border-radius: var(--radius);
+        letter-spacing: -0.01em;
+      }
+      .btn-block {
+        width: 100%;
+      }
+      .btn.is-success {
+        background: var(--success);
+        color: var(--on-primary);
+      }
+
+      /* Builder rows */
+      .links {
+        list-style: none;
+        margin: 0 0 12px;
+        padding: 0;
+        display: grid;
+        gap: 14px;
+      }
+      .row {
+        border: 2px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 14px;
+        background: var(--surface);
+      }
+      .row.is-first {
+        border-color: var(--primary);
+        background: var(--accent-soft);
+      }
+      .row.has-error {
+        border-color: var(--danger);
+      }
+      .row-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .num {
+        display: inline-grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: var(--surface-2);
+        color: var(--text);
+        font-weight: 800;
+        font-size: 0.95rem;
+        border: 1px solid var(--border);
+      }
+      .is-first .num {
+        background: var(--primary);
+        color: var(--on-primary);
+        border-color: var(--primary);
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      .is-first .tag {
+        color: var(--primary);
+      }
+      .row-body {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+        flex-wrap: wrap;
+      }
+      .url-input {
+        flex: 1 1 280px;
+        min-width: 0;
+        min-height: 56px;
+        padding: 12px 14px;
+        font: inherit;
+        font-size: 1.05rem;
+        color: var(--text);
+        background: var(--surface);
+        border: 2px solid var(--border-strong);
+        border-radius: 10px;
+      }
+      .url-input::placeholder {
+        color: var(--muted);
+        opacity: 0.75;
+      }
+      .url-input:focus {
+        outline: 3px solid var(--focus);
+        outline-offset: 1px;
+        border-color: var(--text);
+      }
+      .has-error .url-input {
+        border-color: var(--danger);
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+      }
+      @media (max-width: 520px) {
+        .controls {
+          width: 100%;
+        }
+        .controls .icon-btn {
+          flex: 1;
+        }
+      }
+      .icon-btn {
+        display: inline-grid;
+        place-items: center;
+        min-width: 56px;
+        min-height: 56px;
+        font: inherit;
+        color: var(--text);
+        background: var(--surface);
+        cursor: pointer;
+        border: 2px solid var(--border-strong);
+        border-radius: 10px;
+      }
+      .icon-btn:hover:not(:disabled) {
+        background: var(--surface-2);
+      }
+      .icon-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .icon-btn.remove:hover:not(:disabled) {
+        color: var(--danger);
+        border-color: var(--danger);
+        background: var(--danger-soft);
+      }
+      .error-msg {
+        color: var(--danger);
+        font-weight: 700;
+        margin: 10px 0 0;
+        font-size: 0.98rem;
+      }
+
+      .add-row {
+        margin-bottom: 22px;
+      }
+      .copy-area {
+        display: grid;
+        gap: 12px;
+      }
+      .status {
+        font-weight: 700;
+        margin: 0;
+        min-height: 1.55em;
+      }
+      .status.ok {
+        color: var(--success);
+      }
+      .status.bad {
+        color: var(--danger);
+      }
+      .result {
+        display: grid;
+        gap: 10px;
+        padding: 16px;
+        border-radius: var(--radius-sm);
+        background: var(--success-soft);
+        border: 2px solid var(--success);
+      }
+      .result label {
+        font-weight: 700;
+      }
+      .result-link {
+        width: 100%;
+        min-height: 52px;
+        padding: 10px 12px;
+        font: inherit;
+        font-size: 0.95rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color: var(--text);
+        background: var(--surface);
+        border: 2px solid var(--border-strong);
+        border-radius: 10px;
+      }
+      .result-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .how {
+        color: var(--muted);
+      }
+      .demo-link {
+        white-space: nowrap;
+      }
+
+      .toggle {
+        position: relative;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        cursor: pointer;
+        padding: 16px;
+        margin-bottom: 18px;
+        border: 2px solid var(--border);
+        border-radius: var(--radius-sm);
+      }
+      .toggle:hover {
+        border-color: var(--border-strong);
+      }
+      .toggle input {
+        flex: none;
+        width: 28px;
+        height: 28px;
+        margin: 2px 0 0;
+        accent-color: var(--primary);
+        cursor: pointer;
+      }
+      .toggle-text {
+        display: grid;
+        gap: 2px;
+      }
+      .toggle-text span {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .how li {
+        position: relative;
+      }
+      .tip {
+        color: var(--text);
+        font-weight: 700;
+        cursor: help;
+        text-decoration: underline dotted;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 0.22em;
+      }
+      .tip-box {
+        position: absolute;
+        left: 0;
+        top: 100%;
+        z-index: 10;
+        width: min(460px, calc(100vw - 48px));
+        display: grid;
+        gap: 10px;
+        padding: 14px 16px;
+        margin-top: 0;
+        background: var(--text);
+        color: var(--bg);
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow);
+        font-size: 0.95rem;
+        line-height: 1.45;
+        visibility: hidden;
+        opacity: 0;
+        transition:
+          opacity 0.12s,
+          visibility 0.12s;
+      }
+      .tip-box::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -10px;
+        height: 10px;
+      }
+      .tip-box a {
+        color: var(--bg);
+        font-weight: 700;
+      }
+      .tip:hover + .tip-box,
+      .tip:focus + .tip-box,
+      .tip-box:hover,
+      .tip-box:focus-within {
+        visibility: visible;
+        opacity: 1;
+      }
+      .how ul {
+        margin: 0;
+        padding-left: 1.2em;
+        display: grid;
+        gap: 8px;
+      }
+      .how strong {
+        color: var(--text);
+      }
+
+      /* Opener / landing */
+      .opening {
+        text-align: center;
+        padding-top: 18vh;
+      }
+      .spinner {
+        width: 44px;
+        height: 44px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        border: 5px solid var(--border);
+        border-top-color: var(--primary);
+        animation: spin 0.9s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .spinner {
+          animation: none;
+        }
+      }
+
+      .alert {
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+        background: var(--warn-soft);
+        border: 2px solid var(--warn);
+      }
+      .alert.danger {
+        background: var(--danger-soft);
+        border-color: var(--danger);
+      }
+      .alert-icon {
+        color: var(--warn);
+      }
+      .alert.danger .alert-icon {
+        color: var(--danger);
+      }
+      .alert h1 {
+        margin-top: 10px;
+      }
+      .alert.info {
+        background: var(--accent-soft);
+        border-color: var(--primary);
+      }
+      .alert.info .alert-icon {
+        color: var(--primary);
+      }
+      .alert.success {
+        background: var(--success-soft);
+        border-color: var(--success);
+      }
+      .alert.success .alert-icon {
+        color: var(--success);
+      }
+      .alert-icon {
+        display: block;
+      }
+      .brand-small {
+        margin-bottom: 18px;
+        font-size: 1rem;
+      }
+      .hint {
+        color: var(--muted);
+        margin: 18px 0 12px;
+      }
+      .alert .lead {
+        color: var(--text);
+      }
+
+      .browsers {
+        display: grid;
+        gap: 10px;
+        margin: 0 0 20px;
+      }
+      details.browser {
+        border: 2px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+      }
+      details.browser[open] {
+        border-color: var(--border-strong);
+      }
+      details.browser summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 14px 16px;
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-weight: 700;
+        font-size: 1.08rem;
+      }
+      details.browser summary::-webkit-details-marker {
+        display: none;
+      }
+      details.browser summary::after {
+        content: '';
+        width: 12px;
+        height: 12px;
+        flex: none;
+        margin-right: 4px;
+        border-right: 3px solid currentColor;
+        border-bottom: 3px solid currentColor;
+        transform: rotate(45deg) translateY(-3px);
+        transition: transform 0.15s;
+      }
+      details.browser[open] summary::after {
+        transform: rotate(-135deg) translateY(-3px);
+      }
+      .yours {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: var(--primary);
+        color: var(--on-primary);
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-left: 10px;
+      }
+      .browser-body {
+        padding: 0 16px 16px;
+      }
+      .browser-body ol {
+        margin: 0 0 8px;
+        padding-left: 1.3em;
+        display: grid;
+        gap: 6px;
+      }
+      .browser-body .sub {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 8px 0 0;
+      }
+      .host {
+        font-weight: 800;
+        word-break: break-all;
+      }
+
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+      .help-panel {
+        margin-top: 18px;
+      }
+      .help-panel .illustration {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin: 6px 0 18px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+      }
+      .svg-frame {
+        fill: var(--surface);
+        stroke: var(--border-strong);
+      }
+      .svg-bar {
+        fill: var(--surface-2);
+      }
+      .svg-address {
+        fill: var(--bg);
+        stroke: var(--border-strong);
+      }
+      .svg-text {
+        fill: var(--muted);
+        font:
+          600 17px system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+      }
+      .svg-line {
+        fill: var(--border);
+      }
+      .svg-ink {
+        fill: none;
+        stroke: var(--text);
+      }
+      .svg-ink-fill {
+        fill: var(--text);
+      }
+      .svg-block {
+        fill: var(--danger);
+      }
+      .svg-ring {
+        fill: none;
+        stroke: var(--focus);
+      }
+      .svg-callout {
+        fill: var(--focus);
+      }
+      .svg-callout-text {
+        fill: #1a1300;
+        font:
+          800 17px system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+      }
+
+      .dest {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+      }
+      .dest a {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        border: 2px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 12px 14px;
+        min-height: 64px;
+        background: var(--surface);
+      }
+      .dest a:hover {
+        border-color: var(--primary);
+        background: var(--accent-soft);
+        color: var(--text);
+      }
+      .dest .num {
+        flex: none;
+      }
+      .dest-main {
+        min-width: 0;
+        flex: 1;
+        display: grid;
+      }
+      .dest-host {
+        font-weight: 800;
+        font-size: 1.08rem;
+        word-break: break-all;
+      }
+      .dest-url {
+        color: var(--muted);
+        font-size: 0.9rem;
+        word-break: break-all;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .dest-tag {
+        flex: none;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-align: right;
+      }
+      .dest .opened .dest-tag,
+      .dest a.opened .dest-tag {
+        color: var(--success);
+      }
+      @media (max-width: 520px) {
+        .dest a {
+          flex-wrap: wrap;
+        }
+        .dest-tag {
+          width: 100%;
+          text-align: left;
+          padding-left: 46px;
+        }
+      }
+      footer.site {
+        margin-top: 32px;
+        color: var(--muted);
+        font-size: 0.95rem;
+        text-align: center;
+      }
+      footer.site .btn {
+        margin-top: 16px;
+      }
+      .toggle-text .tip-box {
+        color: var(--bg);
+      }
+      .tip-box p {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      <div class="wrap">
+        <div class="alert danger">
+          <h1>JavaScript is needed</h1>
+          <p class="lead">
+            Multilinks runs in your browser. Please turn on JavaScript and
+            reload this page.
+          </p>
+        </div>
+      </div>
+    </noscript>
+
+    <!-- Shown briefly while a multilink is opening -->
+    <main id="opening" class="wrap opening" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <h1>Opening your links…</h1>
+      <p class="lead">This only takes a moment.</p>
+    </main>
+
+    <!-- Builder: shown when there is no #fragment -->
+    <main id="builder" class="wrap" hidden>
+      <header class="site">
+        <div class="brand">
+          <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="8" fill="var(--primary)" />
+            <path
+              d="M9 11h9v9H9zM14 7h9v9"
+              fill="none"
+              stroke="var(--on-primary)"
+              stroke-width="2.5"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Multilink
+        </div>
+        <h1>One link <br />With the power of many</h1>
+        Bundle your work, blogs, songs, meeting links and more!
+        <br />
+        <p class="lead">
+          <a
+            id="demo-link"
+            class="demo-link"
+            href="./#A=https%3A%2F%2Fwww.wikipedia.org%2F&amp;B=https%3A%2F%2Fwww.un.org%2F&amp;C=https%3A%2F%2Fwww.doctorswithoutborders.org%2F&list=1"
+            target="_blank"
+            rel="noopener"
+            >Click here to see</a
+          >
+        </p>
+      </header>
+
+      <section class="card" aria-labelledby="links-heading">
+        <h2 id="links-heading">Your links</h2>
+        <ol id="links" class="links"></ol>
+        <div class="add-row">
+          <button type="button" id="add" class="btn btn-secondary btn-block">
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 5v14M5 12h14"
+                stroke="currentColor"
+                stroke-width="2.6"
+                stroke-linecap="round"
+              />
+            </svg>
+            Add another link
+          </button>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="always-list" checked />
+          <span class="toggle-text">
+            <span class="tip" tabindex="0" aria-describedby="list-tip"
+              ><strong>Always show list first</strong></span
+            ><span id="list-tip" class="tip-box" role="tooltip">
+              <p>
+                Opening the multilink shows the full list - even when the
+                browser allows pop-ups.
+              </p>
+            </span>
+            <span></span>
+          </span>
+        </label>
+        <div class="copy-area">
+          <button type="button" id="copy" class="btn btn-primary btn-mega">
+            <svg
+              id="copy-icon"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <rect
+                x="8"
+                y="8"
+                width="12"
+                height="12"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              />
+              <path
+                d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              />
+            </svg>
+            <span id="copy-label">Copy multilink</span>
+          </button>
+          <p
+            id="copy-status"
+            class="status"
+            role="status"
+            aria-live="polite"
+          ></p>
+          <div id="result" class="result" hidden>
+            <label for="result-link">Your multilink</label>
+            <input id="result-link" class="result-link" type="text" readonly />
+            <div class="result-actions">
+              <a
+                id="result-test"
+                class="btn btn-secondary"
+                href="#"
+                target="_blank"
+                rel="noopener"
+                >Test it in a new tab</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card how" aria-labelledby="how-heading">
+        <h2 id="how-heading">How it works</h2>
+        <ul>
+          <li>
+            The first time someone opens a multilink, the browser blocks pop-ups
+            so they see a list of links.
+            <ul>
+              <li>
+                Once they allow pop-ups for this site, multilinks open all links
+                at once (unless you check
+                <strong>Always show list first</strong>).
+              </li>
+            </ul>
+          </li>
+          <li>
+            <span class="tip" tabindex="0" aria-describedby="rfc-tip"
+              >Uses <strong>#</strong> for browser-enforced privacy</span
+            ><span id="rfc-tip" class="tip-box" role="tooltip">
+              <q
+                >The target URI excludes the reference's fragment component, if
+                any, since fragment identifiers are reserved for client-side
+                processing.</q
+              >
+              <a
+                href="https://datatracker.ietf.org/doc/html/rfc7230#section-5.1"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Source: RFC 7230, section 5.1</a
+              >
+            </span>
+          </li>
+          <li>
+            Paste an existing multilink under "Your links" to add all of its
+            links
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- Landing: the list of links in a multilink. Stays open behind the new tabs. -->
+    <main id="landing" class="wrap" hidden>
+      <div class="brand brand-small">
+        <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="var(--primary)" />
+          <path
+            d="M9 11h9v9H9zM14 7h9v9"
+            fill="none"
+            stroke="var(--on-primary)"
+            stroke-width="2.5"
+            stroke-linejoin="round"
+          />
+        </svg>
+        Multilink
+      </div>
+      <div id="landing-alert" class="alert" role="alert">
+        <span id="alert-icon" class="alert-icon"></span>
+        <h1 id="landing-title"></h1>
+        <p id="landing-lead" class="lead"></p>
+      </div>
+
+      <section id="dest-section" class="card" aria-label="Links">
+        <button type="button" id="open-all" class="btn btn-primary btn-mega">
+          Open all links
+        </button>
+        <p
+          id="open-all-status"
+          class="status"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <p class="hint">Or open just the ones you need:</p>
+        <ol id="dest" class="dest"></ol>
+      </section>
+
+      <!-- Blocked pop-ups -->
+      <section id="blocked" class="card" aria-labelledby="allow-heading" hidden>
+        <h2 id="allow-heading">Open everything automatically next time</h2>
+        <p>
+          Allow pop-ups for <span class="host js-host"></span> once, and every
+          multilink opens all of its links for you.
+        </p>
+        <div class="browsers">
+          <details class="browser" data-browser="chrome">
+            <summary><span>Chrome</span></summary>
+            <div class="browser-body">
+              <ol>
+                <li>
+                  Click the <strong>pop-up blocked</strong> icon at the right
+                  end of the address bar.
+                </li>
+                <li>
+                  Choose
+                  <strong
+                    >Always allow pop-ups and redirects from
+                    <span class="js-host"></span></strong
+                  >.
+                </li>
+                <li>Click <strong>Done</strong>, then reload this page.</li>
+              </ol>
+              <p class="sub">
+                On Android: tap <strong>Always show</strong> in the message at
+                the bottom of the screen.
+              </p>
+            </div>
+          </details>
+          <details class="browser" data-browser="safari">
+            <summary><span>Safari</span></summary>
+            <div class="browser-body">
+              <ol>
+                <li>
+                  In the menu bar, choose <strong>Safari → Settings</strong>,
+                  then click <strong>Websites</strong>.
+                </li>
+                <li>Click <strong>Pop-up Windows</strong> in the sidebar.</li>
+                <li>
+                  Set <strong><span class="js-host"></span></strong> to
+                  <strong>Allow</strong>, then reload this page.
+                </li>
+              </ol>
+              <p class="sub">
+                On iPhone or iPad: open the Settings app, go to
+                <strong>Safari</strong> (or <strong>Apps → Safari</strong>), and
+                turn off <strong>Block Pop-ups</strong>.
+              </p>
+            </div>
+          </details>
+          <details class="browser" data-browser="firefox">
+            <summary><span>Firefox</span></summary>
+            <div class="browser-body">
+              <ol>
+                <li>
+                  Look for the yellow bar just below the address bar that says
+                  Firefox prevented this site from opening pop-ups.
+                </li>
+                <li>
+                  Click <strong>Settings</strong> (or <strong>Options</strong>)
+                  on that bar.
+                </li>
+                <li>
+                  Choose
+                  <strong
+                    >Allow pop-ups for <span class="js-host"></span></strong
+                  >, then reload this page.
+                </li>
+              </ol>
+            </div>
+          </details>
+          <details class="browser" data-browser="edge">
+            <summary><span>Edge</span></summary>
+            <div class="browser-body">
+              <ol>
+                <li>
+                  Click the <strong>pop-up blocked</strong> icon at the right
+                  end of the address bar.
+                </li>
+                <li>
+                  Choose
+                  <strong
+                    >Always allow pop-ups and redirects from
+                    <span class="js-host"></span></strong
+                  >.
+                </li>
+                <li>Click <strong>Done</strong>, then reload this page.</li>
+              </ol>
+            </div>
+          </details>
+        </div>
+
+        <div class="stack">
+          <button type="button" id="retry" class="btn btn-primary btn-huge">
+            I allowed pop-ups, try again
+          </button>
+          <button
+            type="button"
+            id="help-toggle"
+            class="btn btn-secondary btn-block"
+            aria-expanded="false"
+            aria-controls="help-panel"
+          >
+            Not able to allow popups?
+          </button>
+        </div>
+
+        <div id="help-panel" class="help-panel" hidden>
+          <h2>No problem, use Open all links</h2>
+          <p>
+            Some computers, like work or school laptops, don't let you change
+            pop-up settings. Browsers still let a page open new tabs when
+            <em>you</em> click a button, so the
+            <strong>Open all links</strong> button above still works. Some
+            browsers only allow one new tab per click, so you may need to click
+            it a few times.
+          </p>
+          <p>
+            You can also click the blocked pop-up icon in the address bar to
+            open a blocked tab one time. Here's where it usually appears:
+          </p>
+          <svg
+            class="illustration"
+            viewBox="0 0 640 250"
+            role="img"
+            aria-labelledby="illo-title illo-desc"
+          >
+            <title id="illo-title">Where the blocked pop-up icon appears</title>
+            <desc id="illo-desc">
+              A browser window. At the right end of the address bar is a small
+              window icon with a red cross, which is the blocked pop-up icon. It
+              is circled, with a label pointing to it.
+            </desc>
+            <rect
+              class="svg-frame"
+              x="16"
+              y="16"
+              width="608"
+              height="218"
+              rx="14"
+              stroke-width="2"
+            />
+            <path
+              class="svg-bar"
+              d="M17 30a13 13 0 0 1 13-13h580a13 13 0 0 1 13 13v76H17z"
+            />
+            <circle cx="42" cy="40" r="6" fill="#ff5f57" />
+            <circle cx="62" cy="40" r="6" fill="#febc2e" />
+            <circle cx="82" cy="40" r="6" fill="#28c840" />
+            <rect
+              class="svg-address"
+              x="34"
+              y="60"
+              width="572"
+              height="36"
+              rx="18"
+              stroke-width="1.5"
+            />
+            <rect
+              class="svg-ink"
+              x="52"
+              y="72"
+              width="11"
+              height="10"
+              rx="2"
+              stroke-width="2"
+            />
+            <path
+              class="svg-ink"
+              d="M54.5 72v-3a3 3 0 0 1 6 0v3"
+              stroke-width="2"
+            />
+            <text class="svg-text js-illo-host" x="74" y="84">
+              your-site.github.io
+            </text>
+            <!-- Blocked pop-up icon -->
+            <g transform="translate(548 66)">
+              <rect
+                class="svg-ink"
+                x="1"
+                y="3"
+                width="20"
+                height="16"
+                rx="2.5"
+                stroke-width="2"
+              />
+              <path class="svg-ink" d="M1 8h20" stroke-width="2" />
+              <circle class="svg-block" cx="20" cy="18" r="7" />
+              <path
+                d="M17 15l6 6M23 15l-6 6"
+                stroke="#fff"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </g>
+            <circle class="svg-ring" cx="560" cy="78" r="26" stroke-width="4" />
+            <!-- Callout -->
+            <path class="svg-callout" d="M560 110l-12 22h24z" />
+            <rect
+              class="svg-callout"
+              x="326"
+              y="130"
+              width="278"
+              height="60"
+              rx="12"
+            />
+            <text class="svg-callout-text" x="342" y="156">
+              Blocked pop-up icon
+            </text>
+            <text
+              class="svg-callout-text"
+              x="342"
+              y="178"
+              style="font-weight: 600"
+            >
+              Click it to allow pop-ups
+            </text>
+            <!-- Page placeholder -->
+            <rect
+              class="svg-line"
+              x="44"
+              y="132"
+              width="220"
+              height="14"
+              rx="7"
+            />
+            <rect
+              class="svg-line"
+              x="44"
+              y="158"
+              width="170"
+              height="14"
+              rx="7"
+            />
+            <rect
+              class="svg-line"
+              x="44"
+              y="184"
+              width="200"
+              height="14"
+              rx="7"
+            />
+          </svg>
+          <p class="sub" style="color: var(--muted)">
+            In Firefox, look for a yellow bar just below the address bar
+            instead.
+          </p>
+        </div>
+      </section>
+
+      <footer class="site">
+        <a id="make-own" href="./">Make your own multilink</a>
+        <div>
+          <a id="clone" class="btn btn-secondary" href="./"
+            >Clone this multilink</a
+          >
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      (function () {
+        'use strict';
+
+        // ---------- URL helpers ----------
+
+        // Returns { ok: true, url } or { ok: false, empty?, error }.
+        // Only http: and https: are allowed. A missing protocol gets https:// added.
+        function normalizeUrl(raw) {
+          var s = String(raw == null ? '' : raw).trim();
+          if (!s) return { ok: false, empty: true };
+          var added = false;
+          if (/^\/\//.test(s)) {
+            s = 'https:' + s;
+            added = true;
+          } else if (!/^[a-z][a-z0-9+.\-]*:(?!\d)/i.test(s)) {
+            // No scheme (a "host:port" colon followed by a digit is not a scheme).
+            s = 'https://' + s;
+            added = true;
+          }
+          var u;
+          try {
+            u = new URL(s);
+          } catch (e) {
+            return {
+              ok: false,
+              error: "That doesn't look like a web address.",
+            };
+          }
+          if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+            return {
+              ok: false,
+              error:
+                'Only web links that start with http:// or https:// are allowed.',
+            };
+          }
+          if (
+            !u.hostname ||
+            (added &&
+              u.hostname.indexOf('.') === -1 &&
+              u.hostname !== 'localhost')
+          ) {
+            return {
+              ok: false,
+              error: "That doesn't look like a web address.",
+            };
+          }
+          return { ok: true, url: u.href };
+        }
+
+        // 0 -> A, 25 -> Z, 26 -> AA, ...
+        function keyFor(i) {
+          var s = '';
+          for (var n = i + 1; n > 0; n = Math.floor((n - 1) / 26)) {
+            s = String.fromCharCode(65 + ((n - 1) % 26)) + s;
+          }
+          return s;
+        }
+        function indexForKey(k) {
+          var n = 0;
+          for (var i = 0; i < k.length; i++)
+            n = n * 26 + (k.charCodeAt(i) - 64);
+          return n - 1;
+        }
+
+        var LIST_FLAG = 'list=1';
+        var EDIT_FLAG = 'edit=1';
+        var DEMO_LINKS = [
+          'https://www.wikipedia.org/',
+          'https://www.un.org/',
+          'https://www.doctorswithoutborders.org/',
+        ];
+
+        function buildFragment(urls, alwaysList) {
+          var parts = urls.map(function (u, i) {
+            return keyFor(i) + '=' + encodeURIComponent(u);
+          });
+          if (alwaysList) parts.push(LIST_FLAG);
+          return parts.join('&');
+        }
+
+        // Returns { raws: ordered decoded strings (null if undecodable), alwaysList }.
+        function parseFragment(hash) {
+          var h = hash.replace(/^#/, '');
+          // Some apps re-encode the whole fragment; undo that once.
+          if (h.indexOf('=') === -1 && /%3D/i.test(h)) {
+            try {
+              h = decodeURIComponent(h);
+            } catch (e) {
+              /* keep as is */
+            }
+          }
+          var entries = [],
+            seen = {};
+          h.split('&').forEach(function (part) {
+            var eq = part.indexOf('=');
+            if (eq < 1) return;
+            var k = part.slice(0, eq).toUpperCase();
+            if (!/^[A-Z]{1,3}$/.test(k) || seen[k]) return;
+            seen[k] = true;
+            var v;
+            try {
+              v = decodeURIComponent(part.slice(eq + 1));
+            } catch (e) {
+              v = null;
+            }
+            entries.push({ i: indexForKey(k), raw: v });
+          });
+          entries.sort(function (a, b) {
+            return a.i - b.i;
+          });
+          return {
+            raws: entries.map(function (e) {
+              return e.raw;
+            }),
+            alwaysList: h.split('&').indexOf(LIST_FLAG) !== -1,
+          };
+        }
+
+        function popupBlocked(w) {
+          try {
+            return !w || w.closed || typeof w.closed === 'undefined';
+          } catch (e) {
+            return false;
+          }
+        }
+
+        function openInNewTab(url) {
+          var w = window.open(url, '_blank');
+          if (popupBlocked(w)) return false;
+          try {
+            w.opener = null;
+          } catch (e) {
+            /* cross-origin already */
+          }
+          return true;
+        }
+
+        function show(id) {
+          ['opening', 'builder', 'landing'].forEach(function (x) {
+            document.getElementById(x).hidden = x !== id;
+          });
+          window.scrollTo(0, 0);
+        }
+
+        function pageBase() {
+          return location.href.split('#')[0].split('?')[0];
+        }
+
+        // ---------- Builder ----------
+
+        var ICON_UP =
+          '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        var ICON_DOWN =
+          '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5.5 12.5 12 19l6.5-6.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        var ICON_X =
+          '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
+        var ICON_COPY,
+          ICON_CHECK =
+            '<svg width="32" height="32" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12.5l5 5L20 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+        var rows = [];
+        var nextId = 1;
+        var alwaysList,
+          listEl,
+          copyBtn,
+          copyLabel,
+          copyStatus,
+          resultEl,
+          resultLink,
+          resultTest,
+          copyResetTimer;
+
+        function newRow(value) {
+          return { id: nextId++, value: value || '', error: '' };
+        }
+
+        // prefill: optional { links, alwaysList } from a cloned multilink.
+        function initBuilder(prefill) {
+          listEl = document.getElementById('links');
+          copyBtn = document.getElementById('copy');
+          copyLabel = document.getElementById('copy-label');
+          copyStatus = document.getElementById('copy-status');
+          resultEl = document.getElementById('result');
+          resultLink = document.getElementById('result-link');
+          resultTest = document.getElementById('result-test');
+          ICON_COPY = document.getElementById('copy-icon').outerHTML;
+
+          alwaysList = document.getElementById('always-list');
+          if (prefill && prefill.links.length) {
+            rows = prefill.links.map(function (url) {
+              return newRow(url);
+            });
+            alwaysList.checked = prefill.alwaysList;
+          } else {
+            rows = [newRow(), newRow()];
+          }
+          render();
+
+          document.getElementById('add').addEventListener('click', function () {
+            rows.push(newRow());
+            changed();
+            render({ id: rows[rows.length - 1].id, part: 'input' });
+          });
+          copyBtn.addEventListener('click', onCopy);
+          alwaysList.addEventListener('change', function () {
+            changed();
+            render();
+          });
+          document.getElementById('demo-link').href =
+            pageBase() + '#' + buildFragment(DEMO_LINKS, true);
+          resultLink.addEventListener('focus', function () {
+            resultLink.select();
+          });
+
+          listEl.addEventListener('input', function (e) {
+            var row = rowFor(e.target);
+            if (!row) return;
+            row.value = e.target.value;
+            if (row.error) {
+              row.error = '';
+              paintError(e.target.closest('.row'), row);
+            }
+            changed();
+          });
+          listEl.addEventListener('focusout', function (e) {
+            if (!e.target.classList.contains('url-input')) return;
+            var row = rowFor(e.target);
+            if (!row) return;
+            var ml = readMultilink(row.value);
+            if (ml) loadMultilink(ml);
+            else validateRow(row, e.target);
+          });
+          listEl.addEventListener('keydown', onKeydown);
+          listEl.addEventListener('paste', onPaste);
+          listEl.addEventListener('click', function (e) {
+            var btn = e.target.closest('button[data-action]');
+            if (!btn) return;
+            var row = rowFor(btn);
+            var i = rows.indexOf(row);
+            var action = btn.getAttribute('data-action');
+            if (action === 'up') move(i, i - 1, 'up');
+            else if (action === 'down') move(i, i + 1, 'down');
+            else if (action === 'remove') remove(i);
+          });
+        }
+
+        function rowFor(el) {
+          var li = el.closest('.row');
+          if (!li) return null;
+          var id = Number(li.getAttribute('data-id'));
+          for (var i = 0; i < rows.length; i++)
+            if (rows[i].id === id) return rows[i];
+          return null;
+        }
+
+        function move(from, to, part) {
+          if (to < 0 || to >= rows.length) return;
+          var r = rows.splice(from, 1)[0];
+          rows.splice(to, 0, r);
+          changed();
+          // Keep focus on the same arrow unless it just became disabled.
+          if (
+            (part === 'up' && to === 0) ||
+            (part === 'down' && to === rows.length - 1)
+          ) {
+            part = part === 'up' ? 'down' : 'up';
+          }
+          render({ id: r.id, part: part });
+        }
+
+        function remove(i) {
+          if (rows.length === 1) {
+            rows[0].value = '';
+            rows[0].error = '';
+            changed();
+            render({ id: rows[0].id, part: 'input' });
+            return;
+          }
+          rows.splice(i, 1);
+          changed();
+          var target = rows[Math.min(i, rows.length - 1)];
+          render({ id: target.id, part: 'input' });
+        }
+
+        function render(focus) {
+          listEl.textContent = '';
+          rows.forEach(function (row, i) {
+            var li = document.createElement('li');
+            var labelled = !alwaysList.checked;
+            li.className = 'row' + (i === 0 && labelled ? ' is-first' : '');
+            li.setAttribute('data-id', row.id);
+
+            var head = document.createElement('div');
+            head.className = 'row-head';
+            var num = document.createElement('span');
+            num.className = 'num';
+            num.setAttribute('aria-hidden', 'true');
+            num.textContent = String(i + 1);
+            var tag = document.createElement('span');
+            tag.className = 'tag';
+            tag.textContent =
+              i === 0 ? 'Main link, opens in front' : 'Opens in new tab';
+            head.appendChild(num);
+            if (labelled) head.appendChild(tag);
+
+            var body = document.createElement('div');
+            body.className = 'row-body';
+            var input = document.createElement('input');
+            input.className = 'url-input';
+            input.type = 'text';
+            input.inputMode = 'url';
+            input.autocomplete = 'off';
+            input.spellcheck = false;
+            if (i === 0) input.autofocus = true;
+            input.setAttribute('autocapitalize', 'off');
+            input.setAttribute('autocorrect', 'off');
+            input.setAttribute('enterkeyhint', 'next');
+            input.id = 'link-' + row.id;
+            input.setAttribute(
+              'aria-label',
+              'Link ' +
+                (i + 1) +
+                (labelled ? ', ' + tag.textContent.toLowerCase() : '')
+            );
+            input.placeholder = 'https://wikipedia.com';
+            input.value = row.value;
+
+            var controls = document.createElement('div');
+            controls.className = 'controls';
+            controls.appendChild(
+              iconButton('up', ICON_UP, 'Move link ' + (i + 1) + ' up', i === 0)
+            );
+            controls.appendChild(
+              iconButton(
+                'down',
+                ICON_DOWN,
+                'Move link ' + (i + 1) + ' down',
+                i === rows.length - 1
+              )
+            );
+            controls.appendChild(
+              iconButton('remove', ICON_X, 'Remove link ' + (i + 1), false)
+            );
+
+            body.appendChild(input);
+            body.appendChild(controls);
+
+            var err = document.createElement('p');
+            err.className = 'error-msg';
+            err.id = 'err-' + row.id;
+            li.appendChild(head);
+            li.appendChild(body);
+            li.appendChild(err);
+            paintError(li, row);
+            listEl.appendChild(li);
+          });
+
+          if (focus) {
+            var li = listEl.querySelector('[data-id="' + focus.id + '"]');
+            var el =
+              li &&
+              (focus.part === 'input'
+                ? li.querySelector('.url-input')
+                : li.querySelector('[data-action="' + focus.part + '"]'));
+            if (el) el.focus();
+          }
+        }
+
+        function iconButton(action, icon, label, disabled) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'icon-btn' + (action === 'remove' ? ' remove' : '');
+          b.setAttribute('data-action', action);
+          b.setAttribute('aria-label', label);
+          b.title = label;
+          b.innerHTML = icon;
+          b.disabled = disabled;
+          return b;
+        }
+
+        function paintError(li, row) {
+          var err = li.querySelector('.error-msg');
+          var input = li.querySelector('.url-input');
+          err.textContent = row.error;
+          err.hidden = !row.error;
+          li.classList.toggle('has-error', !!row.error);
+          if (row.error) {
+            input.setAttribute('aria-invalid', 'true');
+            input.setAttribute('aria-describedby', err.id);
+          } else {
+            input.removeAttribute('aria-invalid');
+            input.removeAttribute('aria-describedby');
+          }
+        }
+
+        // Validates a row; rewrites the input to the normalized URL when valid.
+        function validateRow(row, input) {
+          var r = normalizeUrl(row.value);
+          if (r.empty) row.error = '';
+          else if (!r.ok) row.error = r.error;
+          else {
+            row.error = '';
+            if (row.value !== r.url) {
+              row.value = r.url;
+              if (input) input.value = r.url;
+            }
+          }
+          var li = listEl.querySelector('[data-id="' + row.id + '"]');
+          if (li) paintError(li, row);
+          return r;
+        }
+
+        function onKeydown(e) {
+          if (!e.target.classList.contains('url-input')) return;
+          var row = rowFor(e.target);
+          var i = rows.indexOf(row);
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            validateRow(row, e.target);
+            if (i === rows.length - 1) {
+              if (!row.value.trim()) return;
+              rows.push(newRow());
+              changed();
+              render({ id: rows[rows.length - 1].id, part: 'input' });
+            } else {
+              listEl
+                .querySelector('[data-id="' + rows[i + 1].id + '"] .url-input')
+                .focus();
+            }
+          } else if (
+            e.altKey &&
+            (e.key === 'ArrowUp' || e.key === 'ArrowDown')
+          ) {
+            e.preventDefault();
+            var to = e.key === 'ArrowUp' ? i - 1 : i + 1;
+            if (to < 0 || to >= rows.length) return;
+            var r = rows.splice(i, 1)[0];
+            rows.splice(to, 0, r);
+            changed();
+            render({ id: r.id, part: 'input' });
+          }
+        }
+
+        // Returns { links, alwaysList } if text is a multilink, otherwise null.
+        function readMultilink(text) {
+          var s = String(text || '').trim();
+          var hashAt = s.indexOf('#');
+          if (hashAt === -1 || /\s/.test(s)) return null;
+          var parsed = parseFragment(s.slice(hashAt));
+          var links = [];
+          for (var i = 0; i < parsed.raws.length; i++) {
+            var r = normalizeUrl(parsed.raws[i]);
+            if (!r.ok) return null;
+            links.push(r.url);
+          }
+          return links.length
+            ? { links: links, alwaysList: parsed.alwaysList }
+            : null;
+        }
+
+        // Replaces the whole list with the links from a multilink.
+        function loadMultilink(ml) {
+          rows = ml.links.map(function (url) {
+            return newRow(url);
+          });
+          alwaysList.checked = ml.alwaysList;
+          changed();
+          render({ id: rows[rows.length - 1].id, part: 'input' });
+        }
+
+        // Pasting a multilink loads its links; pasting several lines fills
+        // several rows.
+        function onPaste(e) {
+          if (!e.target.classList.contains('url-input')) return;
+          var text = (e.clipboardData || window.clipboardData).getData('text');
+          var ml = readMultilink(text);
+          if (ml) {
+            e.preventDefault();
+            loadMultilink(ml);
+            return;
+          }
+          var lines = String(text || '')
+            .split(/[\r\n]+/)
+            .map(function (s) {
+              return s.trim();
+            })
+            .filter(Boolean);
+          if (lines.length < 2) return;
+          e.preventDefault();
+          var row = rowFor(e.target);
+          var i = rows.indexOf(row);
+          row.value = lines[0];
+          var added = lines.slice(1).map(function (l) {
+            return newRow(l);
+          });
+          rows.splice.apply(rows, [i + 1, 0].concat(added));
+          rows.forEach(function (r) {
+            if (r.value) validateRow(r);
+          });
+          changed();
+          render({ id: added[added.length - 1].id, part: 'input' });
+        }
+
+        // Any edit makes a previously copied link stale.
+        function changed() {
+          resultEl.hidden = true;
+          copyStatus.textContent = '';
+          copyStatus.className = 'status';
+          resetCopyButton();
+        }
+
+        function resetCopyButton() {
+          clearTimeout(copyResetTimer);
+          copyBtn.classList.remove('is-success');
+          copyLabel.textContent = 'Copy multilink';
+          var icon = copyBtn.querySelector('svg');
+          if (icon) icon.outerHTML = ICON_COPY;
+        }
+
+        function onCopy() {
+          var urls = [],
+            firstBad = null;
+          rows.forEach(function (row) {
+            var r = validateRow(
+              row,
+              listEl.querySelector('[data-id="' + row.id + '"] .url-input')
+            );
+            if (r.ok) urls.push(r.url);
+            else if (!r.empty && !firstBad) firstBad = row;
+          });
+
+          if (firstBad) {
+            resultEl.hidden = true;
+            copyStatus.textContent = 'Fix the highlighted link first.';
+            copyStatus.className = 'status bad';
+            listEl
+              .querySelector('[data-id="' + firstBad.id + '"] .url-input')
+              .focus();
+            return;
+          }
+          if (!urls.length) {
+            resultEl.hidden = true;
+            copyStatus.textContent = 'Add at least one link first.';
+            copyStatus.className = 'status bad';
+            listEl.querySelector('.url-input').focus();
+            return;
+          }
+
+          var link = pageBase() + '#' + buildFragment(urls, alwaysList.checked);
+          resultLink.value = link;
+          resultTest.href = link;
+          resultEl.hidden = false;
+
+          copyText(link).then(function (ok) {
+            if (ok) {
+              copyBtn.classList.add('is-success');
+              copyLabel.textContent = 'Copied!';
+              copyBtn.querySelector('svg').outerHTML = ICON_CHECK;
+              copyStatus.textContent = '';
+              copyStatus.className = 'status';
+              clearTimeout(copyResetTimer);
+              copyResetTimer = setTimeout(resetCopyButton, 3000);
+            } else {
+              copyStatus.textContent =
+                "Couldn't copy automatically. Select the link below and copy it.";
+              copyStatus.className = 'status bad';
+              resultLink.focus();
+              resultLink.select();
+            }
+          });
+        }
+
+        function copyText(text) {
+          if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text).then(
+              function () {
+                return true;
+              },
+              function () {
+                return legacyCopy(text);
+              }
+            );
+          }
+          return Promise.resolve(legacyCopy(text));
+        }
+
+        function legacyCopy(text) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.top = '0';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = false;
+          try {
+            ok = document.execCommand('copy');
+          } catch (e) {
+            ok = false;
+          }
+          document.body.removeChild(ta);
+          return ok;
+        }
+
+        // ---------- Opener ----------
+
+        // Every link opens in a new tab and this page stays behind them as the list.
+        // The main (first) link is opened last, because browsers bring the newest
+        // tab to the front.
+
+        var ICON_WARN =
+          '<svg width="48" height="48" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.3" fill="currentColor"/></svg>';
+        var ICON_OK =
+          '<svg width="48" height="48" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+        var items = []; // { url, opened, el } in multilink order; items[0] is the main link
+        var itemsAlwaysList = false;
+
+        // Extras first, main link last so it ends up in front.
+        function openOrder() {
+          return items.slice(1).concat(items.slice(0, 1));
+        }
+
+        function openedKey() {
+          return 'multilink-opened:' + location.hash;
+        }
+
+        function runOpener(hash) {
+          var parsed = parseFragment(hash);
+          itemsAlwaysList = parsed.alwaysList;
+          var links = [],
+            rejected = 0;
+          parsed.raws.forEach(function (raw) {
+            var r = normalizeUrl(raw);
+            if (r.ok) links.push(r.url);
+            else rejected++;
+          });
+          items = links.map(function (url) {
+            return { url: url, opened: false, el: null };
+          });
+
+          if (!links.length) return showLanding('invalid', rejected);
+          // Never auto-open a link that was tampered with.
+          if (rejected) return showLanding('partial', rejected);
+          if (parsed.alwaysList) return showLanding('list');
+
+          // Reloading or coming back to this page shouldn't open everything again.
+          var openedBefore = false;
+          try {
+            openedBefore = sessionStorage.getItem(openedKey()) === '1';
+          } catch (e) {
+            /* storage blocked */
+          }
+          if (openedBefore) return showLanding('again');
+
+          show('opening');
+          var blocked = false;
+          openOrder().forEach(function (x) {
+            if (openInNewTab(x.url)) x.opened = true;
+            else blocked = true;
+          });
+          if (!blocked) {
+            try {
+              sessionStorage.setItem(openedKey(), '1');
+            } catch (e) {
+              /* storage blocked */
+            }
+          }
+          showLanding(blocked ? 'blocked' : 'opened');
+        }
+
+        function hostOf(url) {
+          try {
+            return new URL(url).host;
+          } catch (e) {
+            return url;
+          }
+        }
+
+        function plural(n, one, many) {
+          return n === 1 ? one : many;
+        }
+
+        function showLanding(mode, rejected) {
+          var host = location.host || 'this site';
+          var n = items.length;
+          var alertEl = document.getElementById('landing-alert');
+          var title = document.getElementById('landing-title');
+          var lead = document.getElementById('landing-lead');
+          var icon = document.getElementById('alert-icon');
+          var main = n ? hostOf(items[0].url) : '';
+
+          document.querySelectorAll('.js-host').forEach(function (el) {
+            el.textContent = host;
+          });
+          document.querySelector('.js-illo-host').textContent = host;
+          document.getElementById('open-all').textContent =
+            `Open all links (${n})`;
+
+          alertEl.className = 'alert';
+          alertEl.hidden = mode === 'list' || mode === 'again';
+          icon.innerHTML = ICON_WARN;
+          if (mode === 'opened') {
+            alertEl.classList.add('success');
+            icon.innerHTML = ICON_OK;
+            title.textContent =
+              n === 1 ? 'Opened your link' : 'Opened all ' + n + ' links';
+            lead.textContent =
+              n === 1
+                ? 'It opened in a new tab.'
+                : 'They opened in new tabs, with the main link (' +
+                  main +
+                  ') in front. You can reopen any of them from this list.';
+          } else if (mode === 'blocked') {
+            title.textContent =
+              'Allow pop-ups to open all ' + n + ' links automatically';
+            lead.textContent =
+              'Your browser blocked the new tabs. Open the links below, or allow pop-ups for ' +
+              host +
+              ' once and every multilink will open all of its links for you from then on.';
+            showPopupHelp();
+          } else if (mode === 'partial') {
+            title.textContent =
+              rejected === 1
+                ? '1 link was skipped'
+                : rejected + ' links were skipped';
+            lead.textContent =
+              'This multilink contains ' +
+              plural(rejected, "a link that isn't", "links that aren't") +
+              ' a normal web address (http:// or https://), so ' +
+              plural(rejected, 'it was', 'they were') +
+              ' removed for your safety. Only open the rest if you trust whoever sent this link.';
+          } else if (mode === 'invalid') {
+            alertEl.classList.add('danger');
+            title.textContent = "This multilink doesn't work";
+            lead.textContent =
+              "It doesn't contain any valid web links. It may have been cut off when it was copied. Ask the sender for the link again.";
+            document.getElementById('dest-section').hidden = true;
+          }
+
+          renderDestinations();
+
+          var toggle = document.getElementById('help-toggle');
+          var panel = document.getElementById('help-panel');
+          toggle.addEventListener('click', function () {
+            var open = panel.hidden;
+            panel.hidden = !open;
+            toggle.setAttribute('aria-expanded', String(open));
+            if (open)
+              panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+          document
+            .getElementById('retry')
+            .addEventListener('click', function () {
+              try {
+                sessionStorage.removeItem(openedKey());
+              } catch (e) {
+                /* storage blocked */
+              }
+              location.reload();
+            });
+          document
+            .getElementById('open-all')
+            .addEventListener('click', openAll);
+          document.getElementById('make-own').href = pageBase();
+          var clone = document.getElementById('clone');
+          clone.hidden = !items.length;
+          clone.href =
+            pageBase() +
+            '#' +
+            buildFragment(
+              items.map(function (x) {
+                return x.url;
+              }),
+              itemsAlwaysList
+            ) +
+            '&' +
+            EDIT_FLAG;
+
+          show('landing');
+        }
+
+        function showPopupHelp() {
+          var section = document.getElementById('blocked');
+          if (!section.hidden) return;
+          section.hidden = false;
+          openDetectedBrowser();
+        }
+
+        // Runs from a click, so the browser allows new tabs. Some browsers allow
+        // only one new tab per click; in that case ask for another click.
+        function openAll() {
+          var statusEl = document.getElementById('open-all-status');
+          if (
+            items.every(function (x) {
+              return x.opened;
+            })
+          ) {
+            items.forEach(function (x) {
+              x.opened = false;
+              paintOpened(x);
+            });
+          }
+          openOrder().forEach(function (x) {
+            if (x.opened) return;
+            if (openInNewTab(x.url)) {
+              x.opened = true;
+              paintOpened(x);
+            }
+          });
+          var done = items.filter(function (x) {
+            return x.opened;
+          }).length;
+          if (done === items.length) {
+            statusEl.textContent =
+              'Opened ' +
+              (done === 1 ? 'the link' : 'all ' + done + ' links') +
+              ' in new tabs.';
+            statusEl.className = 'status ok';
+            try {
+              sessionStorage.setItem(openedKey(), '1');
+            } catch (e) {
+              /* storage blocked */
+            }
+            return;
+          }
+          statusEl.textContent =
+            'Your browser opened ' +
+            done +
+            ' of ' +
+            items.length +
+            ' links. Click the button again to open the rest.';
+          statusEl.className = 'status bad';
+          showPopupHelp();
+        }
+
+        function paintOpened(x) {
+          if (!x.el) return;
+          x.el.classList.toggle('opened', x.opened);
+          x.el.querySelector('.dest-tag').textContent = x.opened
+            ? 'Opened ✓'
+            : x.tag;
+        }
+
+        function renderDestinations() {
+          var list = document.getElementById('dest');
+          list.textContent = '';
+          items.forEach(function (x, i) {
+            var li = document.createElement('li');
+            var a = document.createElement('a');
+            a.href = x.url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+
+            var num = document.createElement('span');
+            num.className = 'num';
+            num.setAttribute('aria-hidden', 'true');
+            num.textContent = String(i + 1);
+            var main = document.createElement('span');
+            main.className = 'dest-main';
+            var h = document.createElement('span');
+            h.className = 'dest-host';
+            h.textContent = hostOf(x.url);
+            var full = document.createElement('span');
+            full.className = 'dest-url';
+            full.textContent = x.url;
+            main.appendChild(h);
+            main.appendChild(full);
+            var tag = document.createElement('span');
+            tag.className = 'dest-tag';
+            x.tag = i === 0 && items.length > 1 ? 'Main link' : 'Open';
+
+            a.appendChild(num);
+            a.appendChild(main);
+            a.appendChild(tag);
+            li.appendChild(a);
+            list.appendChild(li);
+
+            x.el = a;
+            paintOpened(x);
+            a.addEventListener('click', function () {
+              x.opened = true;
+              paintOpened(x);
+            });
+          });
+        }
+
+        function detectBrowser() {
+          var ua = navigator.userAgent;
+          if (/Edg(e|A|iOS)?\//.test(ua)) return 'edge';
+          if (/Firefox\/|FxiOS\//.test(ua)) return 'firefox';
+          if (/Chrome\/|CriOS\//.test(ua)) return 'chrome';
+          if (/Safari\//.test(ua)) return 'safari';
+          return null;
+        }
+
+        function openDetectedBrowser() {
+          var b = detectBrowser();
+          var el =
+            b &&
+            document.querySelector('details.browser[data-browser="' + b + '"]');
+          if (!el) return;
+          el.open = true;
+          var badge = document.createElement('span');
+          badge.className = 'yours';
+          badge.textContent = 'Your browser';
+          el.querySelector('summary span').appendChild(badge);
+          el.parentNode.insertBefore(el, el.parentNode.firstChild);
+        }
+
+        // ---------- Router ----------
+
+        // Changing only the #fragment doesn't reload the page, so do it ourselves.
+        window.addEventListener('hashchange', function () {
+          location.reload();
+        });
+
+        var hashParts = location.hash.replace(/^#/, '').split('&');
+        if (
+          !location.hash ||
+          location.hash === '#' ||
+          location.hash === '#' + LIST_FLAG
+        ) {
+          initBuilder();
+          show('builder');
+        } else if (hashParts.indexOf(EDIT_FLAG) !== -1) {
+          // "Clone this multilink": open the builder with its links filled in.
+          var parsed = parseFragment(location.hash);
+          initBuilder({
+            links: parsed.raws
+              .map(normalizeUrl)
+              .filter(function (r) {
+                return r.ok;
+              })
+              .map(function (r) {
+                return r.url;
+              }),
+            alwaysList: parsed.alwaysList,
+          });
+          history.replaceState(null, '', pageBase());
+          show('builder');
+        } else {
+          runOpener(location.hash);
+        }
+      })();
+    </script>
+  </body>
+</html>
