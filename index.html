@@ -790,6 +790,15 @@
         font-size: 0.95rem;
         text-align: center;
       }
+      footer.site .btn {
+        margin-top: 16px;
+      }
+      .toggle-text .tip-box {
+        color: var(--bg);
+      }
+      .tip-box p {
+        margin: 0;
+      }
     </style>
   </head>
   <body>
@@ -865,7 +874,7 @@
             <span class="tip" tabindex="0" aria-describedby="list-tip"
               ><strong>Always show list first</strong></span
             ><span id="list-tip" class="tip-box" role="tooltip">
-              <p style="color: black">
+              <p>
                 Opening the multilink shows the full list - even when the
                 browser allows pop-ups.
               </p>
@@ -1252,6 +1261,11 @@
 
       <footer class="site">
         <a id="make-own" href="./">Make your own multilink</a>
+        <div>
+          <a id="clone" class="btn btn-secondary" href="./"
+            >Clone this multilink</a
+          >
+        </div>
       </footer>
     </main>
 
@@ -1321,6 +1335,7 @@
         }
 
         var LIST_FLAG = 'list=1';
+        var EDIT_FLAG = 'edit=1';
         var DEMO_LINKS = [
           'https://www.wikipedia.org/',
           'https://www.un.org/',
@@ -1431,7 +1446,8 @@
           return { id: nextId++, value: value || '', error: '' };
         }
 
-        function initBuilder() {
+        // prefill: optional { links, alwaysList } from a cloned multilink.
+        function initBuilder(prefill) {
           listEl = document.getElementById('links');
           copyBtn = document.getElementById('copy');
           copyLabel = document.getElementById('copy-label');
@@ -1442,7 +1458,14 @@
           ICON_COPY = document.getElementById('copy-icon').outerHTML;
 
           alwaysList = document.getElementById('always-list');
-          rows = [newRow(), newRow()];
+          if (prefill && prefill.links.length) {
+            rows = prefill.links.map(function (url) {
+              return newRow(url);
+            });
+            alwaysList.checked = prefill.alwaysList;
+          } else {
+            rows = [newRow(), newRow()];
+          }
           render();
 
           document.getElementById('add').addEventListener('click', function () {
@@ -1864,6 +1887,7 @@
           '<svg width="48" height="48" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
         var items = []; // { url, opened, el } in multilink order; items[0] is the main link
+        var itemsAlwaysList = false;
 
         // Extras first, main link last so it ends up in front.
         function openOrder() {
@@ -1876,6 +1900,7 @@
 
         function runOpener(hash) {
           var parsed = parseFragment(hash);
+          itemsAlwaysList = parsed.alwaysList;
           var links = [],
             rejected = 0;
           parsed.raws.forEach(function (raw) {
@@ -2011,6 +2036,19 @@
             .getElementById('open-all')
             .addEventListener('click', openAll);
           document.getElementById('make-own').href = pageBase();
+          var clone = document.getElementById('clone');
+          clone.hidden = !items.length;
+          clone.href =
+            pageBase() +
+            '#' +
+            buildFragment(
+              items.map(function (x) {
+                return x.url;
+              }),
+              itemsAlwaysList
+            ) +
+            '&' +
+            EDIT_FLAG;
 
           show('landing');
         }
@@ -2150,12 +2188,29 @@
           location.reload();
         });
 
+        var hashParts = location.hash.replace(/^#/, '').split('&');
         if (
           !location.hash ||
           location.hash === '#' ||
           location.hash === '#' + LIST_FLAG
         ) {
           initBuilder();
+          show('builder');
+        } else if (hashParts.indexOf(EDIT_FLAG) !== -1) {
+          // "Clone this multilink": open the builder with its links filled in.
+          var parsed = parseFragment(location.hash);
+          initBuilder({
+            links: parsed.raws
+              .map(normalizeUrl)
+              .filter(function (r) {
+                return r.ok;
+              })
+              .map(function (r) {
+                return r.url;
+              }),
+            alwaysList: parsed.alwaysList,
+          });
+          history.replaceState(null, '', pageBase());
           show('builder');
         } else {
           runOpener(location.hash);
