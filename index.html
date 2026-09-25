@@ -865,10 +865,10 @@
             <span class="tip" tabindex="0" aria-describedby="list-tip"
               ><strong>Always show list first</strong></span
             ><span id="list-tip" class="tip-box" role="tooltip">
-              <q
-                >People see every link and pick what to open, even if their
-                browser already allows pop-ups.</q
-              >
+              <p style="color: black">
+                Opening the multilink shows the full list - even when the
+                browser allows pop-ups.
+              </p>
             </span>
             <span></span>
           </span>
@@ -928,6 +928,17 @@
         <h2 id="how-heading">How it works</h2>
         <ul>
           <li>
+            The first time someone opens a multilink, the browser blocks pop-ups
+            so they see a list of links.
+            <ul>
+              <li>
+                Once they allow pop-ups for this site, multilinks open all links
+                at once (unless you check
+                <strong>Always show list first</strong>).
+              </li>
+            </ul>
+          </li>
+          <li>
             <span class="tip" tabindex="0" aria-describedby="rfc-tip"
               >Uses <strong>#</strong> for browser-enforced privacy</span
             ><span id="rfc-tip" class="tip-box" role="tooltip">
@@ -945,15 +956,8 @@
             </span>
           </li>
           <li>
-            The first time someone opens a multilink, the browser blocks pop-ups
-            so they see a list of links.
-            <ul>
-              <li>
-                Once they allow pop-ups for this site, multilinks open all links
-                at once (unless you check
-                <strong>Always show list first</strong>).
-              </li>
-            </ul>
+            Paste an existing multilink under "Your links" to add all of its
+            links
           </li>
         </ul>
       </section>
@@ -1556,6 +1560,7 @@
             input.inputMode = 'url';
             input.autocomplete = 'off';
             input.spellcheck = false;
+            if (i === 0) input.autofocus = true;
             input.setAttribute('autocapitalize', 'off');
             input.setAttribute('autocorrect', 'off');
             input.setAttribute('enterkeyhint', 'next');
