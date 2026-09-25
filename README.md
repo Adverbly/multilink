@@ -10,7 +10,8 @@ Everything lives in a single `index.html` with no build step and no dependencies
 
 - With no `#` in the URL, the page shows the link builder.
 - With a `#` fragment, the page opens the links. The format is `#A=<encoded url>&B=<encoded url>&…`, each URL encoded with `encodeURIComponent`. The fragment is never sent to a server ([RFC 7230, section 5.1](https://datatracker.ietf.org/doc/html/rfc7230#section-5.1)).
-- Turning on **Always show the list first** adds `&list=1`. Then nothing opens automatically: people see the list and open single links or click **Open all links**.
+- **Always show list first** is on by default and adds `&list=1`. Then nothing opens automatically: people see the list and open single links or click **Open all links**.
+- Paste an existing multilink into any link field to load all of its links for editing.
 - Only `http://` and `https://` links are accepted. A link typed without a protocol gets `https://` added.
 - If the browser blocks the new tabs, the page shows the list with an **Open all links** button and explains how to allow pop-ups so it opens everything automatically next time.
 
