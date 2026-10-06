@@ -7,7 +7,7 @@
     <meta name="referrer" content="no-referrer" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'; base-uri 'none'; form-action 'none'"
     />
     <meta
       name="description"
@@ -375,6 +375,9 @@
         margin: 0;
         min-height: 1.55em;
       }
+      .stack > .status:empty {
+        display: none;
+      }
       .status.ok {
         color: var(--success);
       }
@@ -464,7 +467,7 @@
         left: 0;
         top: 100%;
         z-index: 10;
-        width: min(460px, calc(100vw - 48px));
+        width: min(460px, calc(100vw - 72px));
         display: grid;
         gap: 10px;
         padding: 14px 16px;
@@ -799,6 +802,363 @@
       .tip-box p {
         margin: 0;
       }
+
+      /* Motion: quick and subtle */
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+      }
+      @keyframes pop {
+        50% {
+          transform: scale(1.2);
+        }
+      }
+      main.wrap {
+        animation: rise 0.22s ease-out both;
+      }
+      .status:not(:empty) {
+        animation: fade 0.18s ease-out;
+      }
+      .btn.is-success svg,
+      .step.is-done .step-num {
+        animation: pop 0.28s ease-out;
+      }
+      .card {
+        transition: border-color 0.15s;
+      }
+      .btn-primary:hover {
+        box-shadow: 0 6px 16px -6px var(--primary);
+      }
+      .dest a {
+        transition:
+          border-color 0.15s,
+          background-color 0.15s,
+          transform 0.15s;
+      }
+      .dest a:hover {
+        transform: translateX(3px);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        main.wrap,
+        .status:not(:empty),
+        .btn.is-success svg,
+        .step.is-done .step-num {
+          animation: none;
+        }
+        .dest a:hover {
+          transform: none;
+        }
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        pointer-events: none;
+      }
+      .btn-small {
+        min-height: 44px;
+        padding: 8px 16px;
+        font-size: 0.95rem;
+      }
+      .btn-danger {
+        background: transparent;
+        color: var(--danger);
+        border-color: var(--danger);
+      }
+      .btn-danger:hover {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+      }
+      .alert .actions {
+        margin-top: 20px;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 8px;
+      }
+      .divider {
+        border: 0;
+        border-top: 1px solid var(--border);
+        margin: 24px 0;
+      }
+      .note,
+      .field-hint {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      a.quiet {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      /* Whitelabel branding */
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        flex: none;
+      }
+      .brand-small .brand-mark {
+        width: 28px;
+        height: 28px;
+      }
+      img.brand-mark {
+        width: auto;
+        max-width: 180px;
+        object-fit: contain;
+        border-radius: 8px;
+      }
+      .loading {
+        padding-top: 24vh;
+        animation: fade 0.2s 0.3s both;
+      }
+      /* Subdomains can be long words. */
+      h1,
+      .lead,
+      .status,
+      .owner-bar {
+        overflow-wrap: anywhere;
+      }
+      .owner-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        padding: 10px 16px;
+        margin-bottom: 24px;
+        border: 1px solid var(--success);
+        border-radius: var(--radius-sm);
+        background: var(--success-soft);
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+      .verified {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 18px;
+        padding: 6px 14px 6px 10px;
+        border-radius: 999px;
+        background: var(--success-soft);
+        color: var(--success);
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+      .ticks {
+        list-style: none;
+        margin: 0 0 18px;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+      }
+      .ticks li {
+        position: relative;
+        padding-left: 36px;
+      }
+      .ticks li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        top: 0.15em;
+        display: grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        background: var(--success-soft);
+        color: var(--success);
+        font-size: 0.85rem;
+        font-weight: 800;
+      }
+
+      /* Forms */
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+      .field-label {
+        font-weight: 700;
+      }
+      .name-field {
+        display: flex;
+        align-items: stretch;
+        border: 2px solid var(--border-strong);
+        border-radius: 10px;
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .name-field:focus-within {
+        outline: 3px solid var(--focus);
+        outline-offset: 1px;
+        border-color: var(--text);
+      }
+      .name-field .url-input,
+      .name-field .url-input:focus {
+        border: 0;
+        outline: 0;
+        border-radius: 0;
+      }
+      .name-suffix {
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        background: var(--surface-2);
+        color: var(--muted);
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      @media (max-width: 520px) {
+        .name-suffix {
+          font-size: 0.9rem;
+          padding: 0 10px;
+        }
+      }
+      textarea.url-input {
+        resize: vertical;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.85rem;
+      }
+      .file-btn {
+        position: relative;
+        overflow: hidden;
+      }
+      .file-btn input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .file-btn:focus-within {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+      }
+      .logo-preview {
+        height: 56px;
+        max-width: 180px;
+        padding: 6px;
+        object-fit: contain;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--surface-2);
+      }
+      input[type='color'] {
+        width: 56px;
+        height: 56px;
+        padding: 4px;
+        border: 2px solid var(--border-strong);
+        border-radius: 10px;
+        background: var(--surface);
+        cursor: pointer;
+      }
+      .inline-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      /* Steps and keys */
+      .step h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .step-num {
+        display: inline-grid;
+        place-items: center;
+        flex: none;
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: var(--primary);
+        color: var(--on-primary);
+        font-size: 1rem;
+      }
+      .step.is-done .step-num {
+        background: var(--success);
+        font-size: 0;
+      }
+      .step.is-done .step-num::after {
+        content: '✓';
+        font-size: 1.05rem;
+      }
+      .key-list {
+        list-style: none;
+        margin: 0 0 16px;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+      }
+      .key-item {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 2px solid var(--border);
+        border-radius: var(--radius-sm);
+      }
+      .key-item.is-current {
+        border-color: var(--primary);
+      }
+      .key-main {
+        flex: 1 1 220px;
+        min-width: 0;
+        display: grid;
+        gap: 2px;
+      }
+      .key-label {
+        padding: 2px 0;
+        font: inherit;
+        font-weight: 700;
+        color: var(--text);
+        background: transparent;
+        border: 0;
+        border-bottom: 2px dashed var(--border);
+      }
+      .key-label:focus {
+        outline: none;
+        border-bottom-color: var(--primary);
+      }
+      .key-meta {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .key-revoke {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        color: var(--danger);
+        cursor: pointer;
+      }
+      .key-revoke input {
+        width: 22px;
+        height: 22px;
+        accent-color: var(--danger);
+      }
     </style>
   </head>
   <body>
@@ -823,9 +1183,19 @@
 
     <!-- Builder: shown when there is no #fragment -->
     <main id="builder" class="wrap" hidden>
+      <div id="owner-bar" class="owner-bar" hidden>
+        <span>Signed in to <span class="js-site-host"></span></span>
+        <a href="/settings">Settings</a>
+      </div>
       <header class="site">
         <div class="brand">
-          <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true">
+          <svg
+            class="brand-mark"
+            width="36"
+            height="36"
+            viewBox="0 0 32 32"
+            aria-hidden="true"
+          >
             <rect width="32" height="32" rx="8" fill="var(--primary)" />
             <path
               d="M9 11h9v9H9zM14 7h9v9"
@@ -835,12 +1205,12 @@
               stroke-linejoin="round"
             />
           </svg>
-          Multilink
+          <span class="brand-name">Multilink</span>
         </div>
         <h1>One link <br />With the power of many</h1>
         Bundle your work, blogs, songs, meeting links and more!
         <br />
-        <p class="lead">
+        <p id="demo" class="lead">
           <a
             id="demo-link"
             class="demo-link"
@@ -970,23 +1340,35 @@
           </li>
         </ul>
       </section>
+
+      <footer id="get-link" class="site">
+        <a href="/branded">Get your own branded subdomain</a>
+      </footer>
     </main>
 
     <!-- Landing: the list of links in a multilink. Stays open behind the new tabs. -->
     <main id="landing" class="wrap" hidden>
-      <div class="brand brand-small">
-        <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-          <rect width="32" height="32" rx="8" fill="var(--primary)" />
+      <div class="brand brand-small"></div>
+      <p id="verified" class="verified" hidden>
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
           <path
-            d="M9 11h9v9H9zM14 7h9v9"
+            d="M12 2.5 4 5.5v6c0 5 3.4 8.8 8 10 4.6-1.2 8-5 8-10v-6z"
             fill="none"
-            stroke="var(--on-primary)"
-            stroke-width="2.5"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+          <path
+            d="m8.5 12 2.5 2.5 4.5-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
             stroke-linejoin="round"
           />
         </svg>
-        Multilink
-      </div>
+        <span>Verified link from <span class="js-title"></span></span>
+      </p>
       <div id="landing-alert" class="alert" role="alert">
         <span id="alert-icon" class="alert-icon"></span>
         <h1 id="landing-title"></h1>
@@ -1269,6 +1651,504 @@
       </footer>
     </main>
 
+    <!-- ===== Branded subdomains ===== -->
+
+    <!-- Shown while a subdomain loads its branding -->
+    <main id="loading" class="loading" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="visually-hidden">Loading…</p>
+    </main>
+
+    <!-- A full-page message, like a link that can't be verified -->
+    <main id="notice" class="wrap" hidden>
+      <div class="brand brand-small"></div>
+      <div id="notice-box" class="alert" role="alert">
+        <span id="notice-icon" class="alert-icon"></span>
+        <h1 id="notice-title"></h1>
+        <p id="notice-lead" class="lead"></p>
+        <div id="notice-actions" class="actions"></div>
+      </div>
+    </main>
+
+    <!-- A branded subdomain's home page for visitors -->
+    <main id="home" class="wrap" hidden>
+      <header class="site">
+        <div class="brand"></div>
+      </header>
+      <div class="alert info">
+        <svg
+          class="alert-icon"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            d="M12 2.5 4 5.5v6c0 5 3.4 8.8 8 10 4.6-1.2 8-5 8-10v-6z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+          <path
+            d="m8.5 12 2.5 2.5 4.5-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <h1>Verified multilinks from <span class="js-title"></span></h1>
+        <p class="lead">
+          Only <span class="js-title"></span> can create multilinks on
+          <span class="js-site-host"></span>, so any multilink that opens here
+          came from them.
+        </p>
+      </div>
+      <footer class="site">
+        <a id="home-make-own" href="/">Make your own multilink</a>
+        <div><a class="quiet" href="/settings">Owner sign in</a></div>
+      </footer>
+    </main>
+
+    <!-- Main site: pick a subdomain -->
+    <main id="get" class="wrap" hidden>
+      <header class="site">
+        <div class="brand"></div>
+        <h1>Your own branded multilinks</h1>
+        <p class="lead">
+          Get a subdomain with your logo, colors and name on every multilink.
+          Only you can create multilinks there.
+        </p>
+      </header>
+      <section class="card" aria-labelledby="get-heading">
+        <form id="get-form" class="stack" novalidate>
+          <label id="get-heading" class="field-label" for="get-name"
+            >Choose your subdomain</label
+          >
+          <div class="name-field">
+            <input
+              id="get-name"
+              class="url-input"
+              type="text"
+              maxlength="63"
+              placeholder="acme"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+            />
+            <span class="name-suffix">.<span class="js-root-host"></span></span>
+          </div>
+          <p
+            id="get-status"
+            class="status"
+            role="status"
+            aria-live="polite"
+          ></p>
+          <button type="submit" class="btn btn-primary btn-huge">
+            Continue
+          </button>
+        </form>
+      </section>
+      <section class="card" aria-labelledby="perks-heading">
+        <h2 id="perks-heading">What you get</h2>
+        <ul class="ticks">
+          <li>
+            <strong>Your branding.</strong> Your logo, accent color and title
+            replace "Multilink" on your pages.
+          </li>
+          <li>
+            <strong>Only you can post.</strong> Multilinks on your subdomain are
+            signed by your browser, and links anyone else makes are refused.
+          </li>
+          <li>
+            <strong>Still private.</strong> Your links stay after the # in the
+            address, so they never reach our servers.
+          </li>
+          <li>
+            <strong>One-time <span class="js-price">$5.99</span>.</strong> No
+            subscription. You can also hide "Make your own multilink".
+          </li>
+        </ul>
+        <a href="/terms">Terms and privacy</a>
+      </section>
+    </main>
+
+    <main id="terms" class="wrap" hidden>
+      <div class="brand brand-small"></div>
+      <h1>Terms and privacy</h1>
+      <section class="card" aria-labelledby="terms-heading">
+        <h2 id="terms-heading">Branded subdomains</h2>
+        <ul class="ticks">
+          <li>
+            A branded subdomain is a one-time payment, for as long as Multilinks
+            runs. There's no subscription.
+          </li>
+          <li>
+            There are no refunds. Not offering refunds is part of how we keep
+            the price this low.
+          </li>
+          <li>
+            Your owner key is your login. If you lose every copy of your key and
+            also lose access to your email, the subdomain can't be recovered.
+          </li>
+          <li>
+            If you use a company's name (for example <strong>acme</strong>)
+            without an email address at that company's domain (like @acme.com),
+            and the company asks us, you'll lose the subdomain.
+          </li>
+          <li>
+            Subdomains used for phishing, scams or other abuse can be removed.
+          </li>
+        </ul>
+      </section>
+      <section class="card" aria-labelledby="privacy-heading">
+        <h2 id="privacy-heading">Privacy</h2>
+        <ul class="ticks">
+          <li>
+            Your links stay after the # in the address. Browsers never send that
+            part to servers, so we never see them.
+          </li>
+          <li>
+            For a branded subdomain we store your branding, the email address
+            from checkout (only used for key recovery), and the public half of
+            each of your keys with the date and name you gave it.
+          </li>
+          <li>
+            Payments are handled by Stripe, which is the seller of record and
+            takes care of sales tax.
+          </li>
+          <li>No ads, no analytics and no tracking cookies.</li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- Claim an available subdomain -->
+    <main id="claim" class="wrap" hidden>
+      <header id="claim-head" class="site">
+        <div class="brand"></div>
+        <h1 id="claim-title">
+          <span class="js-site-host"></span> is available
+        </h1>
+        <p id="claim-lead" class="lead">
+          Make it yours for a one-time <span class="js-price"></span>.
+        </p>
+      </header>
+      <div id="claim-steps">
+        <section id="claim-step-key" class="card step">
+          <h2><span class="step-num">1</span> Create your owner key</h2>
+          <p>
+            Your owner key is your login. It's made and kept in this browser,
+            and only its public half is sent to us. Save a copy somewhere safe,
+            like your password manager.
+          </p>
+          <div id="claim-key" class="stack"></div>
+        </section>
+        <section class="card step">
+          <h2><span class="step-num">2</span> Pay and claim it</h2>
+          <label class="toggle">
+            <input type="checkbox" id="claim-agree" />
+            <span class="toggle-text">
+              <strong
+                >I agree to the
+                <a href="/terms" target="_blank">terms</a></strong
+              >
+              <span
+                >It's a one-time payment with no refunds, which helps keep the
+                price low. If I lose my key and my email, the subdomain is gone
+                for good.</span
+              >
+            </span>
+          </label>
+          <p class="note">
+            Using a company's name? If you don't have an email address at that
+            company's domain and the company asks us, you'll lose the subdomain.
+          </p>
+          <div class="stack">
+            <button
+              type="button"
+              id="claim-pay"
+              class="btn btn-primary btn-huge"
+              disabled
+            >
+              Pay <span class="js-price"></span>
+            </button>
+            <p
+              id="claim-status"
+              class="status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </div>
+        </section>
+      </div>
+      <div id="claim-done" class="alert success" hidden>
+        <svg
+          class="alert-icon"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          />
+          <path
+            d="M7.5 12.5l3 3 6-6.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <h1><span class="js-site-host"></span> is yours</h1>
+        <p class="lead">
+          Your key is saved in this browser. Add your logo and colors, then make
+          your first multilink.
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="/settings">Set up branding</a>
+          <a class="btn btn-secondary" href="/">Create a multilink</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Owner settings -->
+    <main id="settings" class="wrap" hidden>
+      <header class="site">
+        <div class="brand"></div>
+        <h1>Settings</h1>
+        <p class="lead"><span class="js-site-host"></span></p>
+      </header>
+
+      <section id="signin" class="card" aria-labelledby="signin-heading" hidden>
+        <h2 id="signin-heading">Sign in with your key</h2>
+        <p>
+          Choose the key file you saved for <span class="js-site-host"></span>,
+          or paste its contents.
+        </p>
+        <div class="stack">
+          <label class="btn btn-primary btn-block file-btn"
+            >Choose key file<input
+              type="file"
+              id="signin-file"
+              accept=".json,application/json"
+          /></label>
+          <textarea
+            id="signin-text"
+            class="url-input"
+            rows="3"
+            aria-label="Key"
+            placeholder="Or paste your key here"
+          ></textarea>
+          <button type="button" id="signin-go" class="btn btn-secondary">
+            Sign in with pasted key
+          </button>
+          <p
+            id="signin-status"
+            class="status"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </div>
+        <hr class="divider" />
+        <h3>Forgot your key?</h3>
+        <p>
+          We'll email a recovery link to the address used at checkout. It lets
+          you add a new key and revoke old ones.
+        </p>
+        <button type="button" id="recover-request" class="btn btn-secondary">
+          Email me a recovery link
+        </button>
+        <p
+          id="recover-status"
+          class="status"
+          role="status"
+          aria-live="polite"
+        ></p>
+      </section>
+
+      <div id="account" hidden>
+        <p><a href="/">← Create a multilink</a></p>
+        <section class="card" aria-labelledby="branding-heading">
+          <h2 id="branding-heading">Branding</h2>
+          <form id="brand-form" class="stack" novalidate>
+            <label class="field">
+              <span class="field-label">Title</span>
+              <span class="field-hint"
+                >Replaces "Multilink" at the top of your pages.</span
+              >
+              <input
+                id="brand-title"
+                class="url-input"
+                type="text"
+                maxlength="40"
+                placeholder="Multilink"
+              />
+            </label>
+            <div class="field">
+              <span class="field-label">Logo</span>
+              <span class="field-hint"
+                >PNG, JPEG or WebP, up to 100 KB. Square images work best.</span
+              >
+              <div class="actions">
+                <img
+                  id="brand-logo-preview"
+                  class="logo-preview"
+                  alt=""
+                  hidden
+                />
+                <label class="btn btn-secondary file-btn"
+                  >Upload logo<input
+                    type="file"
+                    id="brand-logo"
+                    accept="image/png,image/jpeg,image/webp"
+                /></label>
+                <button
+                  type="button"
+                  id="brand-logo-remove"
+                  class="btn btn-ghost"
+                  hidden
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="brand-accent">Accent color</label>
+              <div class="actions">
+                <input id="brand-accent" type="color" value="#1d4ed8" />
+                <span id="brand-accent-value" class="mono"></span>
+                <button
+                  type="button"
+                  id="brand-accent-reset"
+                  class="btn btn-ghost"
+                >
+                  Use default
+                </button>
+              </div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="brand-make-own" />
+              <span class="toggle-text">
+                <strong>Show "Make your own multilink"</strong>
+                <span
+                  >Lets visitors make their own multilinks on the main
+                  site.</span
+                >
+              </span>
+            </label>
+            <button type="submit" class="btn btn-primary btn-huge">
+              Save changes
+            </button>
+            <p
+              id="brand-status"
+              class="status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </form>
+        </section>
+
+        <section class="card" aria-labelledby="keys-heading">
+          <h2 id="keys-heading">Keys</h2>
+          <p>
+            Each key can sign in here and create multilinks. Revoking a key also
+            turns off every multilink it created.
+          </p>
+          <ul id="key-list" class="key-list"></ul>
+          <div class="inline-form">
+            <input
+              id="key-add-label"
+              class="url-input"
+              type="text"
+              maxlength="60"
+              aria-label="Name for the new key"
+              placeholder="Name it, like Work laptop"
+            />
+            <button type="button" id="key-add" class="btn btn-secondary">
+              Add a key
+            </button>
+          </div>
+          <p
+            id="keys-status"
+            class="status"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </section>
+
+        <section class="card" aria-labelledby="account-heading">
+          <h2 id="account-heading">Account</h2>
+          <p>Recovery emails go to <strong id="account-email"></strong>.</p>
+          <button type="button" id="signout" class="btn btn-secondary">
+            Sign out of this browser
+          </button>
+        </section>
+      </div>
+    </main>
+
+    <!-- Opened from a "forgot key" email -->
+    <main id="recover" class="wrap" hidden>
+      <header class="site">
+        <div class="brand"></div>
+        <h1>Recover <span class="js-site-host"></span></h1>
+        <p class="lead">
+          Make a new key for this browser, and revoke any keys you've lost.
+        </p>
+      </header>
+      <section id="recover-step-key" class="card step">
+        <h2><span class="step-num">1</span> Make a new key</h2>
+        <div id="recover-key" class="stack"></div>
+      </section>
+      <section class="card step">
+        <h2><span class="step-num">2</span> Revoke lost keys</h2>
+        <p>
+          Revoking a key also turns off every multilink it created, so only
+          revoke keys you've lost or don't trust.
+        </p>
+        <ul id="recover-keys" class="key-list"></ul>
+      </section>
+      <div class="stack">
+        <button
+          type="button"
+          id="recover-apply"
+          class="btn btn-primary btn-huge"
+        >
+          Save and sign in
+        </button>
+        <p
+          id="recover-apply-status"
+          class="status"
+          role="status"
+          aria-live="polite"
+        ></p>
+      </div>
+    </main>
+
+    <template id="key-maker">
+      <p class="km-note" hidden></p>
+      <button type="button" class="btn btn-primary km-create">
+        Create my key
+      </button>
+      <div class="km-save actions" hidden>
+        <button type="button" class="btn btn-primary km-download">
+          Download key file
+        </button>
+        <button type="button" class="btn btn-secondary km-copy">
+          Copy key
+        </button>
+      </div>
+      <p class="status km-status" role="status" aria-live="polite"></p>
+    </template>
+
     <script>
       (function () {
         'use strict';
@@ -1350,8 +2230,8 @@
           return parts.join('&');
         }
 
-        // Returns { raws: ordered decoded strings (null if undecodable), alwaysList }.
-        function parseFragment(hash) {
+        // The fragment's key=value parts.
+        function fragmentParts(hash) {
           var h = hash.replace(/^#/, '');
           // Some apps re-encode the whole fragment; undo that once.
           if (h.indexOf('=') === -1 && /%3D/i.test(h)) {
@@ -1361,9 +2241,15 @@
               /* keep as is */
             }
           }
+          return h.split('&');
+        }
+
+        // Returns { raws: ordered decoded strings (null if undecodable), alwaysList }.
+        function parseFragment(hash) {
+          var parts = fragmentParts(hash);
           var entries = [],
             seen = {};
-          h.split('&').forEach(function (part) {
+          parts.forEach(function (part) {
             var eq = part.indexOf('=');
             if (eq < 1) return;
             var k = part.slice(0, eq).toUpperCase();
@@ -1384,7 +2270,7 @@
             raws: entries.map(function (e) {
               return e.raw;
             }),
-            alwaysList: h.split('&').indexOf(LIST_FLAG) !== -1,
+            alwaysList: parts.indexOf(LIST_FLAG) !== -1,
           };
         }
 
@@ -1407,8 +2293,22 @@
           return true;
         }
 
+        var PAGES = [
+          'loading',
+          'opening',
+          'builder',
+          'landing',
+          'notice',
+          'home',
+          'get',
+          'terms',
+          'claim',
+          'settings',
+          'recover',
+        ];
+
         function show(id) {
-          ['opening', 'builder', 'landing'].forEach(function (x) {
+          PAGES.forEach(function (x) {
             document.getElementById(x).hidden = x !== id;
           });
           window.scrollTo(0, 0);
@@ -1467,6 +2367,13 @@
             rows = [newRow(), newRow()];
           }
           render();
+          presign();
+          // An owner's builder on their subdomain.
+          if (ownerKey) {
+            document.getElementById('owner-bar').hidden = false;
+            document.getElementById('demo').hidden = true;
+          }
+          document.getElementById('get-link').hidden = !!whitelabel;
 
           document.getElementById('add').addEventListener('click', function () {
             rows.push(newRow());
@@ -1779,6 +2686,7 @@
           copyStatus.textContent = '';
           copyStatus.className = 'status';
           resetCopyButton();
+          presign();
         }
 
         function resetCopyButton() {
@@ -1818,7 +2726,21 @@
             return;
           }
 
-          var link = pageBase() + '#' + buildFragment(urls, alwaysList.checked);
+          var fragment = buildFragment(urls, alwaysList.checked);
+          if (!ownerKey) return finishCopy(fragment);
+          var message = linkMessage(urls, alwaysList.checked);
+          if (signedLink.message === message) {
+            return finishCopy(fragment + '&' + SIGN + signedLink.signature);
+          }
+          // Not signed yet, which only happens on a very quick click.
+          signText(message).then(function (signature) {
+            signedLink = { message: message, signature: signature };
+            finishCopy(fragment + '&' + SIGN + signature);
+          });
+        }
+
+        function finishCopy(fragment) {
+          var link = pageBase() + '#' + fragment;
           resultLink.value = link;
           resultTest.href = link;
           resultEl.hidden = false;
@@ -2035,11 +2957,18 @@
           document
             .getElementById('open-all')
             .addEventListener('click', openAll);
-          document.getElementById('make-own').href = pageBase();
+          // Visitors to a branded subdomain make their own on the main site,
+          // unless the owner turned that off.
+          var visitor = whitelabel && !ownerKey;
+          var base = visitor ? whitelabel.root + '/' : pageBase();
+          var makeOwn = document.getElementById('make-own');
           var clone = document.getElementById('clone');
-          clone.hidden = !items.length;
+          makeOwn.href = base;
+          makeOwn.hidden = visitor && !whitelabel.showMakeOwn;
+          clone.hidden = makeOwn.hidden || !items.length;
+          document.getElementById('verified').hidden = !whitelabel;
           clone.href =
-            pageBase() +
+            base +
             '#' +
             buildFragment(
               items.map(function (x) {
@@ -2181,6 +3110,1100 @@
           el.parentNode.insertBefore(el, el.parentNode.firstChild);
         }
 
+        // ---------- Branded subdomains ----------
+
+        // On <name>.<main domain>, the page loads the subdomain's branding and
+        // public keys from /api/brand. Its multilinks must be signed by one of
+        // the owner's keys. Signatures are checked here in the browser, so the
+        // links still never reach the server.
+
+        var whitelabel = null; // the /api/brand response on a subdomain
+        var ownerKey = null; // this browser's key, if it's one of the owner's
+        var clockOffset = 0; // server time minus this computer's time
+        var signedLink = { message: null, signature: null };
+
+        var SIGN = 'sign=';
+        var P256 = { name: 'ECDSA', namedCurve: 'P-256' };
+        var ECDSA_SHA256 = { name: 'ECDSA', hash: 'SHA-256' };
+        var KEY_FILE_TYPE = 'multilinks-owner-key';
+        var MAX_KEYS = 10;
+
+        function byId(id) {
+          return document.getElementById(id);
+        }
+
+        function setText(selector, text) {
+          document.querySelectorAll(selector).forEach(function (el) {
+            el.textContent = text;
+          });
+        }
+
+        function setStatus(el, text, kind) {
+          el.textContent = text || '';
+          el.className = 'status' + (kind ? ' ' + kind : '');
+        }
+
+        function formatDate(ms) {
+          return new Date(ms).toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          });
+        }
+
+        function sleep(ms) {
+          return new Promise(function (resolve) {
+            setTimeout(resolve, ms);
+          });
+        }
+
+        // A JSON request to this site's API. Errors carry a readable message.
+        async function api(path, body, headers) {
+          var res;
+          try {
+            res = await fetch(path, {
+              method: body === undefined ? 'GET' : 'POST',
+              headers: Object.assign(
+                { 'Content-Type': 'application/json' },
+                headers
+              ),
+              body: typeof body === 'object' ? JSON.stringify(body) : body,
+            });
+          } catch (e) {
+            throw new Error(
+              "Couldn't reach Multilinks. Check your connection and try again."
+            );
+          }
+          var data = await res.json().catch(function () {
+            return {};
+          });
+          if (!res.ok) {
+            var err = new Error(
+              data.error || 'Something went wrong. Please try again.'
+            );
+            err.status = res.status;
+            throw err;
+          }
+          return data;
+        }
+
+        // A request signed with the owner's key. The timestamp uses the
+        // server's clock, so a wrong clock here doesn't get it refused.
+        async function ownerApi(action, payload) {
+          var body = JSON.stringify({
+            action: action,
+            site: whitelabel.name,
+            keyId: ownerKey.id,
+            ts: Date.now() + clockOffset,
+            payload: payload || {},
+          });
+          return api('/api/owner', body, {
+            'X-Signature': await signText(body),
+          });
+        }
+
+        // ---------- Owner keys ----------
+
+        // An owner key is an ECDSA P-256 key pair made in the browser. The
+        // private half is kept in IndexedDB as a non-extractable key, so even
+        // this page can't read it back out. The key file is the only copy that
+        // can be exported, and it's never stored.
+
+        function toBase64Url(bytes) {
+          var s = '';
+          new Uint8Array(bytes).forEach(function (b) {
+            s += String.fromCharCode(b);
+          });
+          return btoa(s)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+        }
+
+        function fromBase64Url(s) {
+          return Uint8Array.from(
+            atob(s.replace(/-/g, '+').replace(/_/g, '/')),
+            function (c) {
+              return c.charCodeAt(0);
+            }
+          );
+        }
+
+        // One record per host: { site, id, privateKey, publicKey, label, createdAt, saved }.
+        function keyStore(mode, fn) {
+          return new Promise(function (resolve, reject) {
+            var open = indexedDB.open('multilinks', 1);
+            open.onupgradeneeded = function () {
+              open.result.createObjectStore('keys', { keyPath: 'site' });
+            };
+            open.onerror = function () {
+              reject(open.error);
+            };
+            open.onsuccess = function () {
+              var tx = open.result.transaction('keys', mode);
+              var req = fn(tx.objectStore('keys'));
+              tx.oncomplete = function () {
+                open.result.close();
+                resolve(req.result);
+              };
+              tx.onerror = tx.onabort = function () {
+                reject(tx.error);
+              };
+            };
+          });
+        }
+
+        function loadKey() {
+          return keyStore('readonly', function (store) {
+            return store.get(location.hostname);
+          }).catch(function () {
+            return null;
+          });
+        }
+
+        function saveKey(record) {
+          return keyStore('readwrite', function (store) {
+            return store.put(record);
+          });
+        }
+
+        function forgetKey() {
+          return keyStore('readwrite', function (store) {
+            return store.delete(location.hostname);
+          });
+        }
+
+        // Returns { record, file } for a private key in JWK form. A key's id
+        // is a fingerprint of its public half, the same one the server uses.
+        async function keyFromJwk(jwk, label, createdAt) {
+          var pub = { kty: 'EC', crv: 'P-256', x: jwk.x, y: jwk.y };
+          var priv = Object.assign({ d: jwk.d }, pub);
+          var privateKey = await crypto.subtle.importKey(
+            'jwk',
+            priv,
+            P256,
+            false,
+            ['sign']
+          );
+          var raw = await crypto.subtle.exportKey(
+            'raw',
+            await crypto.subtle.importKey('jwk', pub, P256, true, ['verify'])
+          );
+          var digest = await crypto.subtle.digest('SHA-256', raw);
+          return {
+            record: {
+              site: location.hostname,
+              id: toBase64Url(digest).slice(0, 16),
+              privateKey: privateKey,
+              publicKey: toBase64Url(raw),
+              label: label,
+              createdAt: createdAt,
+              saved: false,
+            },
+            file: JSON.stringify(
+              {
+                type: KEY_FILE_TYPE,
+                site: location.hostname,
+                createdAt: createdAt,
+                privateKey: priv,
+              },
+              null,
+              2
+            ),
+          };
+        }
+
+        async function createKey(label) {
+          var pair = await crypto.subtle.generateKey(P256, true, [
+            'sign',
+            'verify',
+          ]);
+          var jwk = await crypto.subtle.exportKey('jwk', pair.privateKey);
+          return keyFromJwk(jwk, label, Date.now());
+        }
+
+        async function readKeyFile(text) {
+          var data = null;
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            /* reported below */
+          }
+          if (!data || data.type !== KEY_FILE_TYPE || !data.privateKey) {
+            throw new Error("That isn't a Multilinks key file.");
+          }
+          if (data.site !== location.hostname) {
+            throw new Error('That key is for ' + data.site + '.');
+          }
+          return keyFromJwk(data.privateKey, deviceLabel(), data.createdAt);
+        }
+
+        function downloadKeyFile(file) {
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(
+            new Blob([file], { type: 'application/json' })
+          );
+          a.download = location.hostname + '-owner-key.json';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () {
+            URL.revokeObjectURL(a.href);
+          }, 1000);
+        }
+
+        var SYSTEMS = [
+          [/iPhone/, 'iPhone'],
+          [/iPad/, 'iPad'],
+          [/Android/, 'Android'],
+          [/CrOS/, 'ChromeOS'],
+          [/Mac/, 'Mac'],
+          [/Windows/, 'Windows'],
+          [/Linux/, 'Linux'],
+        ];
+
+        // A default name for a key, like "Chrome on Mac".
+        function deviceLabel() {
+          var browser = detectBrowser();
+          var name = browser
+            ? browser.charAt(0).toUpperCase() + browser.slice(1)
+            : 'Browser';
+          var system = SYSTEMS.find(function (x) {
+            return x[0].test(navigator.userAgent);
+          });
+          return system ? name + ' on ' + system[1] : name;
+        }
+
+        async function signText(text) {
+          var signature = await crypto.subtle.sign(
+            ECDSA_SHA256,
+            ownerKey.privateKey,
+            new TextEncoder().encode(text)
+          );
+          return toBase64Url(signature);
+        }
+
+        // Links are signed exactly as they appear in the fragment, along with
+        // the subdomain, so a signature can't be reused anywhere else.
+        function linkMessage(links, listFirst) {
+          return JSON.stringify([
+            'multilinks-link-v1',
+            whitelabel.name,
+            links,
+            !!listFirst,
+          ]);
+        }
+
+        // The links the builder would put in a multilink right now, or null.
+        function builderUrls() {
+          var urls = [];
+          for (var i = 0; i < rows.length; i++) {
+            var r = normalizeUrl(rows[i].value);
+            if (r.ok) urls.push(r.url);
+            else if (!r.empty) return null;
+          }
+          return urls.length ? urls : null;
+        }
+
+        // Owners' links are signed while they type, because browsers only let
+        // a click copy to the clipboard if it does so right away.
+        function presign() {
+          var urls = ownerKey && builderUrls();
+          if (!urls) return;
+          var message = linkMessage(urls, alwaysList.checked);
+          if (signedLink.message === message) return;
+          signText(message).then(function (signature) {
+            signedLink = { message: message, signature: signature };
+          });
+        }
+
+        async function verifyLinks(links, listFirst, signature) {
+          var message = new TextEncoder().encode(linkMessage(links, listFirst));
+          for (var i = 0; i < whitelabel.keys.length; i++) {
+            try {
+              var key = await crypto.subtle.importKey(
+                'raw',
+                fromBase64Url(whitelabel.keys[i].publicKey),
+                P256,
+                false,
+                ['verify']
+              );
+              var ok = await crypto.subtle.verify(
+                ECDSA_SHA256,
+                key,
+                fromBase64Url(signature),
+                message
+              );
+              if (ok) return true;
+            } catch (e) {
+              /* try the next key */
+            }
+          }
+          return false;
+        }
+
+        // Opens a multilink on a branded subdomain only if its owner signed it.
+        async function openVerified(hash) {
+          var parsed = parseFragment(hash);
+          var signature = fragmentParts(hash)
+            .filter(function (p) {
+              return p.indexOf(SIGN) === 0;
+            })
+            .map(function (p) {
+              return p.slice(SIGN.length);
+            })[0];
+          var intact =
+            parsed.raws.length &&
+            parsed.raws.every(function (raw) {
+              return raw !== null;
+            });
+          if (
+            intact &&
+            signature &&
+            (await verifyLinks(parsed.raws, parsed.alwaysList, signature))
+          ) {
+            return runOpener(hash);
+          }
+          showNotice(
+            'danger',
+            "This link can't be verified",
+            'Only ' +
+              (whitelabel.title || location.host) +
+              ' can create multilinks on ' +
+              location.host +
+              ". This one wasn't created by them, or it was changed after it was shared, so none of its links were opened."
+          );
+        }
+
+        // ---------- Branding ----------
+
+        var DEFAULT_MARK, DEFAULT_ICON;
+        var WHITE = [255, 255, 255];
+        var INK = [11, 18, 32];
+        var NIGHT = [19, 27, 42]; // the dark theme's card color
+
+        // Draws the logo and title into every .brand on the page.
+        function applyBrand(b) {
+          var title = b.title || 'Multilink';
+          document.querySelectorAll('.brand').forEach(function (brand) {
+            var mark;
+            if (b.logo) {
+              mark = document.createElement('img');
+              mark.src = b.logo;
+              mark.alt = '';
+              mark.className = 'brand-mark';
+            } else {
+              mark = DEFAULT_MARK.cloneNode(true);
+            }
+            var name = document.createElement('span');
+            name.className = 'brand-name';
+            name.textContent = title;
+            brand.replaceChildren(mark, name);
+          });
+          setText('.js-title', b.title || location.host);
+          document.title = b.title || 'Multilinks';
+          document.querySelector('link[rel=icon]').href =
+            b.logo ||
+            (b.accent
+              ? DEFAULT_ICON.replace('%231d4ed8', '%23' + b.accent.slice(1))
+              : DEFAULT_ICON);
+          applyAccent(b.accent);
+        }
+
+        function hexToRgb(hex) {
+          var n = parseInt(hex.slice(1), 16);
+          return [n >> 16, (n >> 8) & 255, n & 255];
+        }
+
+        function rgbToHex(c) {
+          return (
+            '#' +
+            c
+              .map(function (v) {
+                return Math.round(v).toString(16).padStart(2, '0');
+              })
+              .join('')
+          );
+        }
+
+        function mix(a, b, t) {
+          return a.map(function (v, i) {
+            return v + (b[i] - v) * t;
+          });
+        }
+
+        function contrast(a, b) {
+          function luminance(c) {
+            var l = c.map(function (v) {
+              v /= 255;
+              return v <= 0.03928
+                ? v / 12.92
+                : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2] + 0.05;
+          }
+          var x = luminance(a);
+          var y = luminance(b);
+          return Math.max(x, y) / Math.min(x, y);
+        }
+
+        // Theme colors from one accent, nudged lighter or darker until text in
+        // that color is readable on the page.
+        function accentVars(accent, surface, dark) {
+          var toward = dark ? WHITE : INK;
+          var primary = accent;
+          for (
+            var t = 0.1;
+            contrast(primary, surface) < 4.5 && t <= 1;
+            t += 0.1
+          ) {
+            primary = mix(accent, toward, t);
+          }
+          var onPrimary =
+            contrast(primary, WHITE) >= contrast(primary, INK) ? WHITE : INK;
+          return (
+            '--primary:' +
+            rgbToHex(primary) +
+            ';--primary-hover:' +
+            rgbToHex(mix(primary, toward, 0.2)) +
+            ';--on-primary:' +
+            rgbToHex(onPrimary) +
+            ';--accent-soft:' +
+            rgbToHex(mix(primary, surface, 0.85))
+          );
+        }
+
+        function applyAccent(accent) {
+          var style = byId('brand-style');
+          if (!style) {
+            style = document.createElement('style');
+            style.id = 'brand-style';
+            document.head.appendChild(style);
+          }
+          var c = accent && hexToRgb(accent);
+          style.textContent = c
+            ? ':root{' +
+              accentVars(c, WHITE, false) +
+              '}@media (prefers-color-scheme: dark){:root{' +
+              accentVars(c, NIGHT, true) +
+              '}}'
+            : '';
+        }
+
+        // ---------- Branded pages ----------
+
+        // A full-page message. kind is 'info', 'warn' or 'danger'.
+        function showNotice(kind, title, lead, actions) {
+          byId('notice-box').className = 'alert ' + kind;
+          byId('notice-icon').innerHTML = kind === 'info' ? ICON_OK : ICON_WARN;
+          byId('notice-title').textContent = title;
+          byId('notice-lead').textContent = lead;
+          var bar = byId('notice-actions');
+          bar.textContent = '';
+          (actions || []).forEach(function (action, i) {
+            var a = document.createElement('a');
+            a.className = 'btn ' + (i ? 'btn-secondary' : 'btn-primary');
+            a.href = action.href;
+            a.textContent = action.label;
+            bar.appendChild(a);
+          });
+          bar.hidden = !bar.children.length;
+          show('notice');
+        }
+
+        function showHome() {
+          var link = byId('home-make-own');
+          link.href = whitelabel.root + '/';
+          link.hidden = !whitelabel.showMakeOwn;
+          show('home');
+        }
+
+        // Main site: pick a name, then continue on the subdomain itself so the
+        // key is made and stored there.
+        function showGetPage() {
+          var input = byId('get-name');
+          var status = byId('get-status');
+          var rootHost = location.host;
+          var checked = null;
+          var timer;
+          setText('.js-root-host', rootHost);
+          api('/api/brand').then(
+            function (b) {
+              rootHost = new URL(b.root).host;
+              setText('.js-root-host', rootHost);
+              setText('.js-price', b.price);
+            },
+            function () {}
+          );
+
+          var messages = {
+            available: [' is available', 'ok'],
+            taken: [' is taken. Try another name.', 'bad'],
+            pending: [
+              ' is being claimed right now. Try another name, or check back in an hour.',
+              'bad',
+            ],
+            reserved: [' is reserved. Try another name.', 'bad'],
+            invalid: [
+              " won't work. Use letters, numbers and hyphens, and start and end with a letter or number.",
+              'bad',
+            ],
+          };
+          function nameNow() {
+            return input.value.trim().toLowerCase().split('.')[0];
+          }
+          function check() {
+            var name = nameNow();
+            checked = null;
+            if (!name) return setStatus(status, '');
+            api('/api/subdomains/' + encodeURIComponent(name)).then(
+              function (res) {
+                if (nameNow() !== name) return;
+                checked = res;
+                var m = messages[res.status];
+                setStatus(status, name + '.' + rootHost + m[0], m[1]);
+              },
+              function (e) {
+                setStatus(status, e.message, 'bad');
+              }
+            );
+          }
+          input.addEventListener('input', function () {
+            clearTimeout(timer);
+            timer = setTimeout(check, 250);
+          });
+          byId('get-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (checked && checked.url) location.href = checked.url;
+            else if (!checked) check();
+          });
+          show('get');
+          input.focus();
+        }
+
+        // The "create a key, then save a copy" step. With `persist`, the key
+        // is stored right away so it survives the trip to Stripe; otherwise
+        // the caller stores it once the server has accepted it.
+        function mountKeyMaker(slot, existing, persist, onChange) {
+          slot.appendChild(byId('key-maker').content.cloneNode(true));
+          var create = slot.querySelector('.km-create');
+          var save = slot.querySelector('.km-save');
+          var note = slot.querySelector('.km-note');
+          var status = slot.querySelector('.km-status');
+          var maker = { record: existing && existing.saved ? existing : null };
+          var file = null;
+
+          // A key saved before a cancelled checkout is reused, since the
+          // subdomain is held for that key.
+          if (maker.record) {
+            note.hidden = false;
+            note.textContent =
+              'Using the key you saved in this browser on ' +
+              formatDate(maker.record.createdAt) +
+              '.';
+            create.hidden = true;
+          }
+
+          async function store(record) {
+            try {
+              if (persist) await saveKey(record);
+              return true;
+            } catch (e) {
+              setStatus(
+                status,
+                "This browser couldn't store your key. Private windows can block this, so try a normal window.",
+                'bad'
+              );
+              return false;
+            }
+          }
+
+          create.addEventListener('click', async function () {
+            var made = await createKey(deviceLabel());
+            if (!(await store(made.record))) return;
+            maker.record = made.record;
+            file = made.file;
+            create.hidden = true;
+            save.hidden = false;
+            setStatus(status, 'Key created. Save a copy before you continue.');
+            onChange();
+          });
+
+          async function saved(message) {
+            maker.record.saved = true;
+            if (!(await store(maker.record))) return;
+            setStatus(status, message, 'ok');
+            onChange();
+          }
+          slot
+            .querySelector('.km-download')
+            .addEventListener('click', function () {
+              downloadKeyFile(file);
+              saved('Downloaded. Keep the file somewhere safe.');
+            });
+          slot.querySelector('.km-copy').addEventListener('click', function () {
+            copyText(file).then(function (ok) {
+              if (ok) saved('Copied. Paste it into your password manager.');
+              else
+                setStatus(
+                  status,
+                  "Couldn't copy. Download the file instead.",
+                  'bad'
+                );
+            });
+          });
+          return maker;
+        }
+
+        async function showClaim() {
+          var sessionId = new URLSearchParams(location.search).get(
+            'session_id'
+          );
+          if (sessionId) {
+            show('claim');
+            return confirmClaim(sessionId);
+          }
+          if (whitelabel.type === 'brand') return location.replace('/');
+
+          var existing = await loadKey();
+          show('claim');
+          if (
+            whitelabel.status === 'pending' &&
+            !(existing && existing.saved)
+          ) {
+            byId('claim-title').textContent =
+              location.host + ' is being claimed';
+            byId('claim-lead').textContent =
+              "Someone is checking out this subdomain right now. If they don't finish, it frees up within the hour.";
+            byId('claim-steps').hidden = true;
+            return;
+          }
+
+          var pay = byId('claim-pay');
+          var agree = byId('claim-agree');
+          var status = byId('claim-status');
+          var maker = mountKeyMaker(byId('claim-key'), existing, true, update);
+          function update() {
+            var ready = !!(maker.record && maker.record.saved);
+            byId('claim-step-key').classList.toggle('is-done', ready);
+            pay.disabled = !(ready && agree.checked);
+          }
+          agree.addEventListener('change', update);
+          update();
+
+          pay.addEventListener('click', async function () {
+            pay.disabled = true;
+            setStatus(status, 'Starting checkout…');
+            try {
+              var res = await api('/api/checkout', {
+                publicKey: maker.record.publicKey,
+                label: maker.record.label,
+              });
+              location.href = res.url;
+            } catch (e) {
+              setStatus(status, e.message, 'bad');
+              update();
+            }
+          });
+        }
+
+        // Stripe sends the buyer back here. The webhook usually activates the
+        // subdomain first; this covers the case where it hasn't yet.
+        async function confirmClaim(sessionId) {
+          byId('claim-steps').hidden = true;
+          byId('claim-title').textContent = 'Confirming your payment…';
+          byId('claim-lead').textContent = 'This only takes a moment.';
+          for (var i = 0; i < 15; i++) {
+            try {
+              var res = await api('/api/checkout/confirm', {
+                sessionId: sessionId,
+              });
+              if (res.status === 'active') {
+                history.replaceState(null, '', '/claim');
+                byId('claim-title').hidden = true;
+                byId('claim-lead').hidden = true;
+                byId('claim-done').hidden = false;
+                return;
+              }
+              if (res.status === 'conflict') {
+                return showNotice(
+                  'danger',
+                  'Someone else got ' + location.host + ' first',
+                  'Your payment went through, but someone else finished claiming this subdomain a moment before you. Contact us using the details on your receipt for a full refund.'
+                );
+              }
+            } catch (e) {
+              /* try again */
+            }
+            await sleep(2000);
+          }
+          byId('claim-title').textContent = 'Your payment is still processing';
+          byId('claim-lead').textContent =
+            'Your key is saved in this browser. Reload this page in a few minutes to finish.';
+        }
+
+        async function showSettings() {
+          if (!ownerKey) {
+            byId('signin').hidden = false;
+            setupSignIn();
+            return show('settings');
+          }
+          var account;
+          try {
+            account = await ownerApi('account');
+          } catch (e) {
+            return showNotice(
+              'danger',
+              "Your settings couldn't be loaded",
+              e.message,
+              [{ label: 'Try again', href: location.href }]
+            );
+          }
+          byId('account-email').textContent =
+            account.site.email || 'no email on file';
+          setupBrandForm(account.site);
+          renderKeys(account.keys);
+          byId('account').hidden = false;
+          show('settings');
+
+          byId('key-add').addEventListener('click', addKey);
+          byId('signout').addEventListener('click', async function () {
+            var sure = confirm(
+              'Sign out of this browser? You will need your key file to sign in again.'
+            );
+            if (!sure) return;
+            await forgetKey();
+            location.replace('/');
+          });
+        }
+
+        function setupSignIn() {
+          var status = byId('signin-status');
+          async function signIn(text) {
+            try {
+              var made = await readKeyFile(text);
+              var active = whitelabel.keys.some(function (k) {
+                return k.id === made.record.id;
+              });
+              if (!active) {
+                throw new Error(
+                  "That key can't sign in to " +
+                    location.host +
+                    '. It may have been revoked.'
+                );
+              }
+              made.record.saved = true;
+              await saveKey(made.record);
+              location.reload();
+            } catch (e) {
+              setStatus(status, e.message, 'bad');
+            }
+          }
+          byId('signin-file').addEventListener('change', function (e) {
+            var file = e.target.files[0];
+            if (file) file.text().then(signIn);
+          });
+          byId('signin-go').addEventListener('click', function () {
+            signIn(byId('signin-text').value);
+          });
+          byId('recover-request').addEventListener('click', async function () {
+            var s = byId('recover-status');
+            setStatus(s, 'Sending…');
+            try {
+              await api('/api/recovery', {});
+              setStatus(
+                s,
+                'If ' +
+                  location.host +
+                  ' has an owner, we just emailed them a recovery link. It works for 30 minutes.',
+                'ok'
+              );
+            } catch (e) {
+              setStatus(s, e.message, 'bad');
+            }
+          });
+        }
+
+        // Edits are previewed on this page right away and saved on submit.
+        function setupBrandForm(site) {
+          var draft = {
+            title: site.title,
+            accent: site.accent,
+            logo: site.logo,
+            showMakeOwn: site.showMakeOwn,
+          };
+          var title = byId('brand-title');
+          var accent = byId('brand-accent');
+          var logoInput = byId('brand-logo');
+          var makeOwn = byId('brand-make-own');
+          var status = byId('brand-status');
+
+          function paint() {
+            accent.value = draft.accent || '#1d4ed8';
+            byId('brand-accent-value').textContent = draft.accent || 'Default';
+            byId('brand-accent-reset').hidden = !draft.accent;
+            byId('brand-logo-preview').hidden = !draft.logo;
+            byId('brand-logo-preview').src = draft.logo || '';
+            byId('brand-logo-remove').hidden = !draft.logo;
+            applyBrand(draft);
+          }
+          title.value = draft.title;
+          makeOwn.checked = draft.showMakeOwn;
+          paint();
+
+          title.addEventListener('input', function () {
+            draft.title = title.value;
+            paint();
+          });
+          accent.addEventListener('input', function () {
+            draft.accent = accent.value;
+            paint();
+          });
+          byId('brand-accent-reset').addEventListener('click', function () {
+            draft.accent = '';
+            paint();
+          });
+          makeOwn.addEventListener('change', function () {
+            draft.showMakeOwn = makeOwn.checked;
+          });
+          byId('brand-logo-remove').addEventListener('click', function () {
+            draft.logo = null;
+            logoInput.value = '';
+            paint();
+          });
+          logoInput.addEventListener('change', function () {
+            var file = logoInput.files[0];
+            if (!file) return;
+            if (!/^image\/(png|jpeg|webp)$/.test(file.type)) {
+              return setStatus(
+                status,
+                'Choose a PNG, JPEG or WebP image.',
+                'bad'
+              );
+            }
+            if (file.size > 100 * 1024) {
+              return setStatus(
+                status,
+                'That image is ' +
+                  Math.ceil(file.size / 1024) +
+                  ' KB. Logos must be 100 KB or smaller.',
+                'bad'
+              );
+            }
+            var reader = new FileReader();
+            reader.onload = function () {
+              draft.logo = reader.result;
+              setStatus(status, '');
+              paint();
+            };
+            reader.readAsDataURL(file);
+          });
+          byId('brand-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            setStatus(status, 'Saving…');
+            try {
+              var res = await ownerApi('update', {
+                title: draft.title.trim(),
+                accent: draft.accent,
+                logo: draft.logo,
+                showMakeOwn: draft.showMakeOwn,
+              });
+              Object.assign(whitelabel, res.site);
+              setStatus(
+                status,
+                'Saved. Your pages now use this branding.',
+                'ok'
+              );
+            } catch (err) {
+              setStatus(status, err.message, 'bad');
+            }
+          });
+        }
+
+        function keyItem(k) {
+          var li = document.createElement('li');
+          li.className = 'key-item';
+          var main = document.createElement('div');
+          main.className = 'key-main';
+          var meta = document.createElement('span');
+          meta.className = 'key-meta';
+          meta.textContent = 'Created ' + formatDate(k.createdAt);
+          li.appendChild(main);
+          return { li: li, main: main, meta: meta };
+        }
+
+        function renderKeys(keys) {
+          var list = byId('key-list');
+          var status = byId('keys-status');
+          list.textContent = '';
+          keys.forEach(function (k) {
+            var item = keyItem(k);
+            var current = k.id === ownerKey.id;
+            if (current) {
+              item.li.classList.add('is-current');
+              item.meta.textContent += ' · This browser';
+            }
+            var label = document.createElement('input');
+            label.className = 'key-label';
+            label.value = k.label;
+            label.placeholder = 'Unnamed key';
+            label.maxLength = 60;
+            label.setAttribute('aria-label', 'Key name');
+            label.addEventListener('change', function () {
+              ownerApi('label_key', { id: k.id, label: label.value }).then(
+                function () {
+                  setStatus(status, 'Saved.', 'ok');
+                },
+                function (e) {
+                  setStatus(status, e.message, 'bad');
+                }
+              );
+            });
+            item.main.append(label, item.meta);
+
+            var revoke = document.createElement('button');
+            revoke.type = 'button';
+            revoke.className = 'btn btn-danger btn-small';
+            revoke.textContent = 'Revoke';
+            revoke.disabled = keys.length === 1;
+            revoke.addEventListener('click', function () {
+              revokeKey(k, current);
+            });
+            item.li.appendChild(revoke);
+            list.appendChild(item.li);
+          });
+          byId('key-add').disabled = keys.length >= MAX_KEYS;
+        }
+
+        async function revokeKey(k, current) {
+          var status = byId('keys-status');
+          var sure = confirm(
+            'Revoke ' +
+              (k.label || 'this key') +
+              '? Multilinks created with it will stop working' +
+              (current ? ', and this browser will be signed out.' : '.')
+          );
+          if (!sure) return;
+          try {
+            var res = await ownerApi('revoke_key', { id: k.id });
+            if (current) {
+              await forgetKey();
+              return location.replace('/settings');
+            }
+            renderKeys(res.keys);
+            setStatus(status, 'Key revoked.', 'ok');
+          } catch (e) {
+            setStatus(status, e.message, 'bad');
+          }
+        }
+
+        // Makes a key for another device and downloads its file.
+        async function addKey() {
+          var status = byId('keys-status');
+          var input = byId('key-add-label');
+          var label = input.value.trim() || 'Another device';
+          try {
+            var made = await createKey(label);
+            var res = await ownerApi('add_key', {
+              publicKey: made.record.publicKey,
+              label: label,
+            });
+            input.value = '';
+            renderKeys(res.keys);
+            downloadKeyFile(made.file);
+            setStatus(
+              status,
+              'Key added and downloaded. On the other device, open ' +
+                location.host +
+                '/settings and sign in with that file.',
+              'ok'
+            );
+          } catch (e) {
+            setStatus(status, e.message, 'bad');
+          }
+        }
+
+        async function showRecover() {
+          var token =
+            new URLSearchParams(location.hash.slice(1)).get('t') || '';
+          var keys;
+          try {
+            keys = (await api('/api/recovery/keys', { token: token })).keys;
+          } catch (e) {
+            return showNotice(
+              'danger',
+              'This recovery link has expired',
+              'Recovery links work once, for 30 minutes. You can request a new one on the settings page.',
+              [{ label: 'Go to settings', href: '/settings' }]
+            );
+          }
+          show('recover');
+
+          var maker = mountKeyMaker(
+            byId('recover-key'),
+            null,
+            false,
+            function () {
+              var ready = !!(maker.record && maker.record.saved);
+              byId('recover-step-key').classList.toggle('is-done', ready);
+            }
+          );
+          var list = byId('recover-keys');
+          keys.forEach(function (k) {
+            var item = keyItem(k);
+            var name = document.createElement('strong');
+            name.textContent = k.label || 'Unnamed key';
+            item.main.append(name, item.meta);
+            var revoke = document.createElement('label');
+            revoke.className = 'key-revoke';
+            var box = document.createElement('input');
+            box.type = 'checkbox';
+            box.value = k.id;
+            revoke.append(box, 'Revoke');
+            item.li.appendChild(revoke);
+            list.appendChild(item.li);
+          });
+
+          var status = byId('recover-apply-status');
+          byId('recover-apply').addEventListener('click', async function () {
+            var record = maker.record;
+            var revoke = Array.from(list.querySelectorAll('input:checked')).map(
+              function (box) {
+                return box.value;
+              }
+            );
+            if (record && !record.saved) {
+              return setStatus(
+                status,
+                'Save a copy of your new key first.',
+                'bad'
+              );
+            }
+            if (!record && !revoke.length) {
+              return setStatus(
+                status,
+                'Make a new key or choose keys to revoke.',
+                'bad'
+              );
+            }
+            setStatus(status, 'Saving…');
+            try {
+              await api('/api/recovery/apply', {
+                token: token,
+                addKey: record && {
+                  publicKey: record.publicKey,
+                  label: record.label,
+                },
+                revoke: revoke,
+              });
+              if (record) await saveKey(record);
+              location.replace('/settings');
+            } catch (e) {
+              setStatus(status, e.message, 'bad');
+            }
+          });
+        }
+
         // ---------- Router ----------
 
         // Changing only the #fragment doesn't reload the page, so do it ourselves.
@@ -2188,32 +4211,112 @@
           location.reload();
         });
 
-        var hashParts = location.hash.replace(/^#/, '').split('&');
-        if (
-          !location.hash ||
-          location.hash === '#' ||
-          location.hash === '#' + LIST_FLAG
-        ) {
-          initBuilder();
-          show('builder');
-        } else if (hashParts.indexOf(EDIT_FLAG) !== -1) {
-          // "Clone this multilink": open the builder with its links filled in.
-          var parsed = parseFragment(location.hash);
-          initBuilder({
-            links: parsed.raws
-              .map(normalizeUrl)
-              .filter(function (r) {
-                return r.ok;
-              })
-              .map(function (r) {
-                return r.url;
-              }),
-            alwaysList: parsed.alwaysList,
-          });
-          history.replaceState(null, '', pageBase());
-          show('builder');
-        } else {
-          runOpener(location.hash);
+        var path = location.pathname.replace(/\/+$/, '') || '/';
+        DEFAULT_MARK = document.querySelector('.brand-mark').cloneNode(true);
+        DEFAULT_ICON = document
+          .querySelector('link[rel=icon]')
+          .getAttribute('href');
+        applyBrand({});
+
+        if (mightBeSubdomain(location.hostname)) startSubdomain();
+        else startMain();
+
+        // Hosts like "example.com" or "localhost" are never subdomains, so the
+        // main site doesn't have to ask the server. The server decides the rest.
+        function mightBeSubdomain(host) {
+          if (/^[\d.]+$/.test(host) || host.indexOf(':') !== -1) return false;
+          return /\.localhost$/.test(host) || host.split('.').length > 2;
+        }
+
+        function startMain() {
+          if (path === '/branded') return showGetPage();
+          if (path === '/terms') return show('terms');
+          startMultilinks();
+        }
+
+        async function startSubdomain() {
+          show('loading');
+          var b;
+          try {
+            b = await api('/api/brand');
+          } catch (e) {
+            // Hosted without the Worker, like on a static host.
+            if (e.status === 404) return startMain();
+            return showNotice(
+              'warn',
+              "This page isn't available right now",
+              'Please try again in a few minutes.',
+              [{ label: 'Try again', href: location.href }]
+            );
+          }
+          clockOffset = b.now - Date.now();
+          if (b.type === 'root') return startMain();
+
+          whitelabel = b;
+          setText('.js-site-host', location.host);
+          setText('.js-price', b.price || '');
+          if (path === '/terms') return show('terms');
+          if (b.type === 'unclaimed') {
+            if (b.status === 'invalid' || b.status === 'reserved') {
+              return showNotice(
+                'danger',
+                "This address doesn't exist",
+                'Check the link and try again.',
+                [{ label: 'Go to Multilinks', href: b.root + '/' }]
+              );
+            }
+            return showClaim();
+          }
+
+          applyBrand(b);
+          var record = await loadKey();
+          var active =
+            record &&
+            b.keys.some(function (k) {
+              return k.id === record.id;
+            });
+          if (active) ownerKey = record;
+          if (path === '/claim') return showClaim();
+          if (path === '/settings') return showSettings();
+          if (path === '/recover') return showRecover();
+          startMultilinks();
+        }
+
+        // The builder, a cloned multilink in the builder, or the multilink in
+        // the fragment. On a branded subdomain only the owner gets the builder.
+        function startMultilinks() {
+          if (
+            !location.hash ||
+            location.hash === '#' ||
+            location.hash === '#' + LIST_FLAG
+          ) {
+            if (whitelabel && !ownerKey) return showHome();
+            initBuilder();
+            show('builder');
+          } else if (
+            fragmentParts(location.hash).indexOf(EDIT_FLAG) !== -1 &&
+            (!whitelabel || ownerKey)
+          ) {
+            // "Clone this multilink": open the builder with its links filled in.
+            var parsed = parseFragment(location.hash);
+            initBuilder({
+              links: parsed.raws
+                .map(normalizeUrl)
+                .filter(function (r) {
+                  return r.ok;
+                })
+                .map(function (r) {
+                  return r.url;
+                }),
+              alwaysList: parsed.alwaysList,
+            });
+            history.replaceState(null, '', pageBase());
+            show('builder');
+          } else if (whitelabel) {
+            openVerified(location.hash);
+          } else {
+            runOpener(location.hash);
+          }
         }
       })();
     </script>

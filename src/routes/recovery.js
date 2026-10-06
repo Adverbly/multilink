@@ -24,7 +24,7 @@ export async function requestRecovery(request, env, url, ctx) {
        COALESCE(SUM(site = ?1 AND created_at > ?2), 0) AS hour,
        COALESCE(SUM(site = ?1), 0) AS day,
        COUNT(*) AS everyone
-     FROM recovery_requests WHERE created_at > ?3`,
+     FROM recovery_requests WHERE created_at > ?3`
   )
     .bind(name, now - HOUR, now - DAY)
     .first();
@@ -32,15 +32,15 @@ export async function requestRecovery(request, env, url, ctx) {
   if (recent.hour >= 1 || recent.day >= 3 || recent.everyone >= dailyLimit) {
     throw new HttpError(
       429,
-      'A recovery email was requested recently. Check your inbox, or try again later.',
+      'A recovery email was requested recently. Check your inbox, or try again later.'
     );
   }
   await env.DB.batch([
     env.DB.prepare('DELETE FROM recovery_requests WHERE created_at <= ?').bind(
-      now - DAY,
+      now - DAY
     ),
     env.DB.prepare(
-      'INSERT INTO recovery_requests (site, created_at) VALUES (?, ?)',
+      'INSERT INTO recovery_requests (site, created_at) VALUES (?, ?)'
     ).bind(name, now),
   ]);
   ctx.waitUntil(sendRecovery(env, url, name, now).catch(console.error));
@@ -52,7 +52,7 @@ async function sendRecovery(env, url, name, now) {
   if (!site?.email) return;
   const token = randomToken();
   await env.DB.prepare(
-    'INSERT INTO recovery_tokens (token_hash, site, expires_at) VALUES (?, ?, ?)',
+    'INSERT INTO recovery_tokens (token_hash, site, expires_at) VALUES (?, ?, ?)'
   )
     .bind(await hashToken(token), name, now + TOKEN_MS)
     .run();
@@ -91,7 +91,7 @@ export async function applyRecovery(request, env, url) {
 
   const active = await getActiveKeys(env.DB, name);
   const kept = active.filter(
-    (k) => !revoke.includes(k.id) && k.id !== added?.id,
+    (k) => !revoke.includes(k.id) && k.id !== added?.id
   );
   const total = kept.length + (added ? 1 : 0);
   if (total < 1) throw new HttpError(400, 'Keep or add at least one key.');
@@ -102,12 +102,12 @@ export async function applyRecovery(request, env, url) {
   const now = Date.now();
   await env.DB.batch([
     env.DB.prepare(
-      'UPDATE recovery_tokens SET used_at = ? WHERE token_hash = ?',
+      'UPDATE recovery_tokens SET used_at = ? WHERE token_hash = ?'
     ).bind(now, tokenHash),
     ...revoke.map((id) =>
       env.DB.prepare(
-        'UPDATE owner_keys SET revoked_at = ? WHERE site = ? AND id = ? AND revoked_at IS NULL',
-      ).bind(now, name, id),
+        'UPDATE owner_keys SET revoked_at = ? WHERE site = ? AND id = ? AND revoked_at IS NULL'
+      ).bind(now, name, id)
     ),
     ...(added
       ? [
@@ -119,7 +119,7 @@ export async function applyRecovery(request, env, url) {
               publicKey: addKey.publicKey,
               label: cleanText(addKey.label, 60),
             },
-            now,
+            now
           ),
         ]
       : []),
@@ -142,7 +142,7 @@ async function checkToken(db, name, token) {
   if (!row || row.site !== name || row.used_at || row.expires_at < Date.now()) {
     throw new HttpError(
       401,
-      'This recovery link has expired or was already used.',
+      'This recovery link has expired or was already used.'
     );
   }
   return tokenHash;

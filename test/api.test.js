@@ -21,7 +21,7 @@ async function call(host, path, { method = 'GET', body, headers } = {}) {
       body: typeof body === 'string' ? body : body && JSON.stringify(body),
     }),
     env,
-    ctx,
+    ctx
   );
   await waitOnExecutionContext(ctx);
   return { status: res.status, data: await res.json() };
@@ -55,7 +55,7 @@ async function ownerCall(name, key, action, payload, overrides = {}) {
   const signature = await crypto.subtle.sign(
     { name: 'ECDSA', hash: 'SHA-256' },
     key.privateKey,
-    new TextEncoder().encode(body),
+    new TextEncoder().encode(body)
   );
   return call(site(name), '/api/owner', {
     method: 'POST',
@@ -130,6 +130,11 @@ function paidEvent(session) {
 
 describe('buying a subdomain', () => {
   it('holds the name during checkout and activates it when Stripe says it was paid', async () => {
+    expect((await call('multilinks.test', '/api/brand')).data).toMatchObject({
+      type: 'root',
+      root: 'https://multilinks.test',
+      price: '$5.99',
+    });
     expect((await call(site('acme'), '/api/brand')).data).toMatchObject({
       type: 'unclaimed',
       status: 'available',
@@ -140,11 +145,11 @@ describe('buying a subdomain', () => {
     const { key, session } = await checkout('acme');
     expect(session.form.get('managed_payments[enabled]')).toBe('true');
     expect(session.form.get('success_url')).toBe(
-      'https://acme.multilinks.test/claim?session_id={CHECKOUT_SESSION_ID}',
+      'https://acme.multilinks.test/claim?session_id={CHECKOUT_SESSION_ID}'
     );
 
     expect(
-      (await call('multilinks.test', '/api/subdomains/acme')).data.status,
+      (await call('multilinks.test', '/api/subdomains/acme')).data.status
     ).toBe('pending');
     const other = await newKey();
     expect(
@@ -153,7 +158,7 @@ describe('buying a subdomain', () => {
           method: 'POST',
           body: { publicKey: other.publicKey },
         })
-      ).status,
+      ).status
     ).toBe(409);
 
     expect((await webhook(paidEvent(session), 'whsec_wrong')).status).toBe(400);
@@ -169,7 +174,7 @@ describe('buying a subdomain', () => {
     });
     expect(JSON.stringify(brand)).not.toContain('owner@example.com');
     expect(
-      (await call('multilinks.test', '/api/subdomains/acme')).data.status,
+      (await call('multilinks.test', '/api/subdomains/acme')).data.status
     ).toBe('taken');
   });
 
@@ -185,7 +190,7 @@ describe('buying a subdomain', () => {
     session.payment_status = 'paid';
     expect((await confirm()).data.status).toBe('active');
     expect((await ownerCall('bravo', key, 'account')).data.site.email).toBe(
-      'owner@example.com',
+      'owner@example.com'
     );
   });
 
@@ -228,15 +233,14 @@ describe('owner requests', () => {
 
     const svg = 'data:image/svg+xml;base64,' + btoa('<svg onload="x()"/>');
     expect((await ownerCall(name, key, 'update', { logo: svg })).status).toBe(
-      400,
+      400
     );
   });
 
   it('refuses unsigned, stale, foreign and tampered requests', async () => {
     const stranger = await newKey();
     expect(
-      (await ownerCall(name, stranger, 'account', {}, { keyId: key.id }))
-        .status,
+      (await ownerCall(name, stranger, 'account', {}, { keyId: key.id })).status
     ).toBe(401);
     expect(
       (
@@ -245,12 +249,12 @@ describe('owner requests', () => {
           key,
           'account',
           {},
-          { ts: Date.now() - 6 * 60_000 },
+          { ts: Date.now() - 6 * 60_000 }
         )
-      ).status,
+      ).status
     ).toBe(401);
     expect(
-      (await ownerCall(name, key, 'account', {}, { site: 'acme' })).status,
+      (await ownerCall(name, key, 'account', {}, { site: 'acme' })).status
     ).toBe(401);
 
     const tampered = await call(site(name), '/api/owner', {
@@ -281,16 +285,16 @@ describe('owner requests', () => {
     const eleventh = await newKey();
     expect(
       (await ownerCall(name, key, 'add_key', { publicKey: eleventh.publicKey }))
-        .status,
+        .status
     ).toBe(400);
 
     for (const k of keys.slice(1)) {
       expect(
-        (await ownerCall(name, key, 'revoke_key', { id: k.id })).status,
+        (await ownerCall(name, key, 'revoke_key', { id: k.id })).status
       ).toBe(200);
     }
     expect(
-      (await ownerCall(name, key, 'revoke_key', { id: key.id })).status,
+      (await ownerCall(name, key, 'revoke_key', { id: key.id })).status
     ).toBe(400);
     expect((await call(site(name), '/api/brand')).data.keys).toHaveLength(1);
 
@@ -310,7 +314,7 @@ describe('forgot key', () => {
     expect((await request()).status).toBe(429);
     // Same answer for a subdomain nobody owns, and no email.
     expect(
-      (await call(site('echo'), '/api/recovery', { method: 'POST' })).data,
+      (await call(site('echo'), '/api/recovery', { method: 'POST' })).data
     ).toEqual({ ok: true });
 
     expect(emails).toHaveLength(1);

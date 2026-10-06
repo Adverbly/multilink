@@ -24,12 +24,12 @@ async function stripe(env, method, path, params) {
         'Stripe-Version': API_VERSION,
       },
       body: params && toForm(params),
-    },
+    }
   );
   const data = await res.json();
   if (!res.ok) {
     throw new Error(
-      `Stripe ${method} ${path} failed: ${data.error?.message || res.status}`,
+      `Stripe ${method} ${path} failed: ${data.error?.message || res.status}`
     );
   }
   return data;
@@ -37,7 +37,7 @@ async function stripe(env, method, path, params) {
 
 export function createCheckoutSession(
   env,
-  { claimId, site, origin, expiresAt },
+  { claimId, site, origin, expiresAt }
 ) {
   return stripe(env, 'POST', '/v1/checkout/sessions', {
     mode: 'payment',
@@ -68,7 +68,7 @@ export async function verifyWebhook(env, payload, header, now = Date.now()) {
   if (Math.abs(now / 1000 - timestamp) > WEBHOOK_TOLERANCE_SECONDS) return null;
   const expected = await hmacSha256Hex(
     env.STRIPE_WEBHOOK_SECRET,
-    `${timestamp}.${payload}`,
+    `${timestamp}.${payload}`
   );
   return signatures.some((s) => safeEqual(s, expected))
     ? JSON.parse(payload)

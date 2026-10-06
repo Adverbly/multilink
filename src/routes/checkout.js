@@ -40,24 +40,24 @@ export async function startCheckout(request, env, url) {
   try {
     await env.DB.batch([
       env.DB.prepare(
-        "UPDATE claims SET status = 'expired' WHERE site = ? AND status = 'pending' AND (expires_at <= ? OR public_key = ?)",
+        "UPDATE claims SET status = 'expired' WHERE site = ? AND status = 'pending' AND (expires_at <= ? OR public_key = ?)"
       ).bind(name, now, publicKey),
       env.DB.prepare(
-        "INSERT INTO claims (id, site, public_key, key_label, status, created_at, expires_at) VALUES (?, ?, ?, ?, 'pending', ?, ?)",
+        "INSERT INTO claims (id, site, public_key, key_label, status, created_at, expires_at) VALUES (?, ?, ?, ?, 'pending', ?, ?)"
       ).bind(
         claimId,
         name,
         publicKey,
         cleanText(label, 60),
         now,
-        now + HOLD_MINUTES * MINUTE,
+        now + HOLD_MINUTES * MINUTE
       ),
     ]);
   } catch (err) {
     if (!String(err.message).includes('UNIQUE')) throw err;
     throw new HttpError(
       409,
-      'Someone else is checking out this subdomain right now. Try again in an hour.',
+      'Someone else is checking out this subdomain right now. Try again in an hour.'
     );
   }
 
@@ -103,7 +103,7 @@ export async function stripeWebhook(request, env) {
   const event = await verifyWebhook(
     env,
     payload,
-    request.headers.get('Stripe-Signature'),
+    request.headers.get('Stripe-Signature')
   );
   if (!event) throw new HttpError(400, 'Invalid signature');
   const session = event.data?.object;
@@ -130,7 +130,7 @@ export async function activateClaim(db, session) {
       .bind(claim.id)
       .run();
     console.error(
-      `Claim ${claim.id} paid for ${claim.site}, which is already taken. Refund checkout session ${session.id}.`,
+      `Claim ${claim.id} paid for ${claim.site}, which is already taken. Refund checkout session ${session.id}.`
     );
     return 'conflict';
   }
@@ -142,18 +142,18 @@ export async function activateClaim(db, session) {
     await db.batch([
       db
         .prepare(
-          'INSERT INTO sites (name, email, claim_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+          'INSERT INTO sites (name, email, claim_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)'
         )
         .bind(claim.site, email, claim.id, now, now),
       upsertKey(
         db,
         claim.site,
         { id: key.id, publicKey: claim.public_key, label: claim.key_label },
-        now,
+        now
       ),
       db
         .prepare(
-          "UPDATE claims SET status = 'active', session_id = ? WHERE id = ?",
+          "UPDATE claims SET status = 'active', session_id = ? WHERE id = ?"
         )
         .bind(session.id, claim.id),
     ]);

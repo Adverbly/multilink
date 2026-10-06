@@ -32,7 +32,7 @@ export async function ownerAction(request, env, url) {
     throw new HttpError(401, 'This request expired. Please try again.');
   }
   const row = await env.DB.prepare(
-    'SELECT public_key FROM owner_keys WHERE site = ? AND id = ? AND revoked_at IS NULL',
+    'SELECT public_key FROM owner_keys WHERE site = ? AND id = ? AND revoked_at IS NULL'
   )
     .bind(name, msg.keyId)
     .first();
@@ -57,7 +57,7 @@ const ACTIONS = {
     if (!columns.length) return;
     await db
       .prepare(
-        `UPDATE sites SET ${columns.map((c) => `${c} = ?`).join(', ')}, updated_at = ? WHERE name = ?`,
+        `UPDATE sites SET ${columns.map((c) => `${c} = ?`).join(', ')}, updated_at = ? WHERE name = ?`
       )
       .bind(...Object.values(fields), Date.now(), name)
       .run();
@@ -70,7 +70,7 @@ const ACTIONS = {
     if (!active.some((k) => k.id === key.id) && active.length >= MAX_KEYS) {
       throw new HttpError(
         400,
-        `You can have up to ${MAX_KEYS} keys. Revoke one first.`,
+        `You can have up to ${MAX_KEYS} keys. Revoke one first.`
       );
     }
     await upsertKey(
@@ -81,7 +81,7 @@ const ACTIONS = {
         publicKey: payload.publicKey,
         label: cleanText(payload.label, 60),
       },
-      Date.now(),
+      Date.now()
     ).run();
   },
 
@@ -93,7 +93,7 @@ const ACTIONS = {
     }
     await db
       .prepare(
-        'UPDATE owner_keys SET revoked_at = ? WHERE site = ? AND id = ? AND revoked_at IS NULL',
+        'UPDATE owner_keys SET revoked_at = ? WHERE site = ? AND id = ? AND revoked_at IS NULL'
       )
       .bind(Date.now(), name, payload.id)
       .run();
@@ -151,7 +151,7 @@ function brandFields(payload) {
 function validLogo(dataUrl) {
   const match =
     /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(
-      String(dataUrl),
+      String(dataUrl)
     );
   let bytes = null;
   try {

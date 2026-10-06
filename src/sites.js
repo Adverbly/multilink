@@ -46,7 +46,7 @@ export function getSite(db, name) {
 export async function getActiveKeys(db, name) {
   const { results } = await db
     .prepare(
-      'SELECT id, public_key, label, created_at FROM owner_keys WHERE site = ? AND revoked_at IS NULL ORDER BY created_at',
+      'SELECT id, public_key, label, created_at FROM owner_keys WHERE site = ? AND revoked_at IS NULL ORDER BY created_at'
     )
     .bind(name)
     .all();
@@ -58,7 +58,7 @@ export async function availability(db, name, now = Date.now()) {
   if (await getSite(db, name)) return 'taken';
   const pending = await db
     .prepare(
-      "SELECT 1 FROM claims WHERE site = ? AND status = 'pending' AND expires_at > ?",
+      "SELECT 1 FROM claims WHERE site = ? AND status = 'pending' AND expires_at > ?"
     )
     .bind(name, now)
     .first();
@@ -70,7 +70,7 @@ export function upsertKey(db, site, { id, publicKey, label }, now) {
   return db
     .prepare(
       `INSERT INTO owner_keys (site, id, public_key, label, created_at) VALUES (?, ?, ?, ?, ?)
-       ON CONFLICT (site, id) DO UPDATE SET revoked_at = NULL, label = excluded.label, created_at = excluded.created_at`,
+       ON CONFLICT (site, id) DO UPDATE SET revoked_at = NULL, label = excluded.label, created_at = excluded.created_at`
     )
     .bind(site, id, publicKey, label, now);
 }

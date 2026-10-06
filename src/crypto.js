@@ -49,7 +49,7 @@ export async function verifySignature(key, signature, message) {
       ECDSA_SHA256,
       key,
       fromBase64Url(signature),
-      encoder.encode(message),
+      encoder.encode(message)
     );
   } catch {
     return false;
@@ -62,7 +62,7 @@ export async function hmacSha256Hex(secret, message) {
     encoder.encode(secret),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ['sign'],
+    ['sign']
   );
   const mac = await crypto.subtle.sign('HMAC', key, encoder.encode(message));
   return [...new Uint8Array(mac)]

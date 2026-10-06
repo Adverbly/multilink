@@ -14,7 +14,14 @@ import {
 export async function getBrand(request, env, url) {
   const now = Date.now();
   const name = subdomainOf(url, env);
-  if (name === null) return json({ type: 'root', now });
+  if (name === null) {
+    return json({
+      type: 'root',
+      root: rootOrigin(url, env),
+      price: env.PRICE_DISPLAY,
+      now,
+    });
+  }
 
   const root = rootOrigin(url, env);
   const problem = nameProblem(name);
